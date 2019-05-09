@@ -19,7 +19,7 @@ function FilterForm(props) {
           <TextInput placeholder="type here" />
           {/* <GenreSearchDropdown /> */}
         </FormField>
-        <YearFormField preselectedYear={1980} />
+        <YearFormField presetYears={[1980]} />
         <Button type="submit" label="Search" />
       </Box>
     </Form>
