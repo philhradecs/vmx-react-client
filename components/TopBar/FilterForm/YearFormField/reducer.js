@@ -1,8 +1,9 @@
+const dropValuesRange = [1900, 2020];
+const dropEntries = 10;
+
 function readYearsByIndexRange(dropValues, [start, end]) {
   return dropValues.slice(start, end + 1);
 }
-
-export const dropValuesRange = [1900, 2020];
 
 function createDropValuesArray(selectedYears, dropValues) {
   if (typeof dropValues === 'object') {
@@ -16,7 +17,10 @@ function createDropValuesArray(selectedYears, dropValues) {
       ? Math.ceil((selectedYears[0] + selectedYears[1]) / 2)
       : selectedYears[0];
 
-  let arr = Array.from({ length: 10 }, (v, k) => centralValue + k - 5);
+  let arr = Array.from(
+    { length: dropEntries },
+    (v, k) => centralValue + k - Math.ceil(dropEntries / 2)
+  );
   if (arr[0] < dropValuesRange[0]) {
     arr = arr.map(num => num + dropValuesRange[0] - arr[0]);
   } else if (arr[arr.length - 1] > dropValuesRange[1]) {
@@ -25,12 +29,23 @@ function createDropValuesArray(selectedYears, dropValues) {
   return arr.reverse();
 }
 
-const initialState = {
-  years: [2005],
-  dropValues: createDropValuesArray([2005]),
-  dropSelection: [4, 4],
-  yearDropOpen: false
-};
+function init(initialYears) {
+  const dropValues = createDropValuesArray(initialYears);
+  const sortedYears = [...initialYears].sort();
+  let dropSelection = initialYears.map(year => dropValues.indexOf(year));
+
+  if (dropSelection.length < 2) {
+    dropSelection = dropSelection.concat(dropSelection);
+  }
+
+  const initialState = {
+    years: sortedYears,
+    dropValues,
+    dropSelection,
+    yearDropOpen: false
+  };
+  return initialState;
+}
 
 function reducer(state, action) {
   switch (action.type) {
@@ -78,4 +93,4 @@ function reducer(state, action) {
   }
 }
 
-export { initialState, reducer };
+export { init, dropValuesRange, dropEntries, reducer };
