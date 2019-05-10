@@ -2,9 +2,7 @@ import { useEffect, useReducer, useRef } from 'react';
 
 import YearSelectDrop from './YearSelectDrop';
 import YearHotInput from './YearHotInput';
-import { initialState, reducer } from './reducer';
-
-const dropValuesRange = [1900, 2020];
+import { init, dropValuesRange, dropEntries, reducer } from './reducer';
 
 function serializeYears(arr) {
   const list = arr.sort();
@@ -27,13 +25,14 @@ function inputParser(yearInput) {
   const [min, max] = dropValuesRange;
 
   const eachWithinRange = arr => arr.every(val => val >= min && val <= max);
-  const validRangeSpan = arr => Math.abs(arr[0] - arr[arr.length - 1]) <= 9;
+  const validRangeSpan = arr =>
+    Math.abs(arr[0] - arr[arr.length - 1]) <= dropEntries - 1;
 
   return eachWithinRange(yearArr) && validRangeSpan(yearArr) && yearArr.sort();
 }
 
-function YearFormField() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+function YearFormField({ initialYears }) {
+  const [state, dispatch] = useReducer(reducer, initialYears, init);
   const textInputRef = useRef();
 
   useEffect(() => {}, [state.dropSelection, state.years]);
@@ -52,7 +51,7 @@ function YearFormField() {
           dispatch={dispatch}
           dropValues={state.dropValues}
           dropValuesRange={dropValuesRange}
-          entries={10}
+          entries={dropEntries}
           presetSelection={state.dropSelection}
           textInputRef={textInputRef}
         />

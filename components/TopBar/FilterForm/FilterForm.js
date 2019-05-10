@@ -15,8 +15,8 @@ function FilterForm(props) {
         <FormField name="country" label="Country">
           <TextInput placeholder="type here" />
         </FormField>
-        <GenreFormField />
-        <YearFormField presetYears={[1980]} />
+        <GenreFormField presetInput="" />
+        <YearFormField initialYears={[1975]} />
         <Button type="submit" label="Search" />
       </Box>
     </Form>

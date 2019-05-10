@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
+import { CaretDown, CaretUp } from 'grommet-icons';
 
 function YearSelectDrop({
   dispatch,
@@ -11,37 +12,59 @@ function YearSelectDrop({
 }) {
   const [selection, setSelection] = useState(presetSelection);
 
-  function handleScroll(event) {
-    event.preventDefault();
+  function adaptToUserRangeMod(direction) {
     const [rangeMin, rangeMax] = dropValuesRange;
     const years = [...dropValues];
     years.sort();
-    if (event.deltaY < 0 && years[years.length - 1] < rangeMax) {
-      dispatch({ type: 'incrementDropValues' });
-    } else if (event.deltaY > 0 && years[0] > rangeMin) {
-      dispatch({ type: 'decrementDropValues' });
+
+    switch (direction) {
+      case 'inc': {
+        if (years[years.length - 1] < rangeMax) {
+          dispatch({ type: 'incrementDropValues' });
+        } else if (selection[0] > 0) {
+          setSelection(selection.map(idx => idx - 1));
+        }
+        break;
+      }
+      case 'dec': {
+        if (years[0] > rangeMin) {
+          dispatch({ type: 'decrementDropValues' });
+        } else if (selection[1] < entries - 1) {
+          setSelection(selection.map(idx => idx + 1));
+        }
+        break;
+      }
+      default:
+        break;
     }
   }
 
-  useEffect(() => {
-    const scrollArea = document.getElementById('rangeSelectContainer');
-    scrollArea.addEventListener('wheel', handleScroll);
-    return function cleanup() {
-      scrollArea.removeEventListener('wheel', handleScroll);
-    };
-  });
+  function handleScroll(event) {
+    event.preventDefault();
 
-  useEffect(() => {
+    if (event.deltaY < 0) {
+      adaptToUserRangeMod('inc');
+    } else if (event.deltaY > 0) {
+      adaptToUserRangeMod('dec');
+    }
+  }
+
+  function handleClick(event) {
+    event.preventDefault();
+    adaptToUserRangeMod(event.target.id);
+  }
+
+  function handleClickOutside() {
+    dispatch({ type: 'closeDrop' });
+  }
+
+  useLayoutEffect(() => {
     dispatch({ type: 'applyUserSelection', payload: selection });
   }, [selection]);
 
   useLayoutEffect(() => {
     setSelection(presetSelection);
   }, [presetSelection]);
-
-  function handleClickOutside() {
-    dispatch({ type: 'closeDrop' });
-  }
 
   const numArray = Array.from({ length: entries }, (v, k) => k);
 
@@ -51,14 +74,30 @@ function YearSelectDrop({
       onClickOutside={handleClickOutside}
       stretch={false}
       target={textInputRef.current}
-      pad={{ vertical: '0.6rem' }}
       elevation="small"
     >
-      <Stack id="rangeSelectContainer">
+      <Box
+        align="center"
+        justify="center"
+        onClick={handleClick}
+        cursor="pointer"
+        id="inc"
+        pad={{ vertical: '0.4rem' }}
+      >
+        <CaretUp pointerEvents="none" color="plain" size="small" />
+      </Box>
+      <Stack id="rangeSelectContainer" onWheel={handleScroll}>
         <Box direction="column">
           {numArray.map(index => (
-            <Box key={index} pad={{ horizontal: '1rem', vertical: '0.4rem' }}>
-              <Text style={{ fontFamily: 'monospace' }}>
+            <Box key={index} pad={{ horizontal: '1rem', vertical: '0.3rem' }}>
+              <Text
+                style={{
+                  fontFamily: 'monospace',
+                  userSelect: 'none',
+                  msUserSelect: 'none',
+                  MozUserSelect: 'none'
+                }}
+              >
                 {dropValues[index]}
               </Text>
             </Box>
@@ -76,6 +115,16 @@ function YearSelectDrop({
           onChange={values => setSelection(values)}
         />
       </Stack>
+      <Box
+        align="center"
+        justify="center"
+        onClick={handleClick}
+        cursor="pointer"
+        id="dec"
+        pad={{ vertical: '0.4rem' }}
+      >
+        <CaretDown pointerEvents="none" color="plain" size="small" />
+      </Box>
     </Drop>
   );
 }
