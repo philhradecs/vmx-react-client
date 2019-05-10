@@ -1,6 +1,6 @@
 import { Box, Button, Form, FormField, TextInput } from 'grommet';
-import YearFormField from './YearFieldDropdown/YearFormField';
-import GenreSearchDropdown from './GenreDropdown';
+import YearFormField from './YearFormField/YearFormField';
+import GenreFormField from './GenreFormField/GenreInputDropdown';
 
 function FilterForm(props) {
   return (
@@ -15,10 +15,7 @@ function FilterForm(props) {
         <FormField name="country" label="Country">
           <TextInput placeholder="type here" />
         </FormField>
-        <FormField name="genre" label="Genre">
-          <TextInput placeholder="type here" />
-          {/* <GenreSearchDropdown /> */}
-        </FormField>
+        <GenreFormField />
         <YearFormField presetYears={[1980]} />
         <Button type="submit" label="Search" />
       </Box>

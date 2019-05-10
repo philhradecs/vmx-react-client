@@ -16,9 +16,9 @@ function YearSelectDrop({
     const [rangeMin, rangeMax] = dropValuesRange;
     const years = [...dropValues];
     years.sort();
-    if (event.deltaY > 0 && years[years.length - 1] < rangeMax) {
+    if (event.deltaY < 0 && years[years.length - 1] < rangeMax) {
       dispatch({ type: 'incrementDropValues' });
-    } else if (event.deltaY < 0 && years[0] > rangeMin) {
+    } else if (event.deltaY > 0 && years[0] > rangeMin) {
       dispatch({ type: 'decrementDropValues' });
     }
   }
