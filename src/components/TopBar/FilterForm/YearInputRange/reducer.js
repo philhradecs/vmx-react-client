@@ -1,4 +1,4 @@
-const dropValuesRange = [1900, 2020];
+const dropValuesRange = [1900, 2020]; // TODO: parameters from props
 const dropEntries = 10;
 
 function readYearsByIndexRange(dropValues, [start, end]) {

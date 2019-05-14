@@ -1,6 +1,6 @@
 import React from 'react';
 import App, { Container } from 'next/app';
-import { ApolloClient, InMemoryCache, HttpLink } from 'apollo-boost';
+import { ApolloClient, InMemoryCache, HttpLink, gql } from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 import fetch from 'node-fetch';
 
@@ -9,7 +9,7 @@ const client = new ApolloClient({
   cache,
   link: new HttpLink({
     fetch,
-    uri: 'http://localhost:4000/graphql'
+    uri: 'http://localhost:4000/'
   })
 });
 

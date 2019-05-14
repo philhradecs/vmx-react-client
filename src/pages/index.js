@@ -34,15 +34,6 @@ function Home() {
 
 export default Home;
 
-// const GET_ARTIST_DETAILS = gql`
-//   query GetArtistDetails($artistID: ID!) {
-//     artistDetails(artistID: $artistID) {
-//       url
-//       profile
-//     }
-//   }
-// `;
-
 // export default ({ artistID = 3455 }) => (
 //   <Query query={GET_ARTIST_DETAILS} variables={{ artistID }}>
 //     {({ data, loading, error, fetchMore }) => {
