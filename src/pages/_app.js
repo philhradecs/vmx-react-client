@@ -3,6 +3,28 @@ import App, { Container } from 'next/app';
 import { ApolloClient, InMemoryCache, HttpLink, gql } from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 import fetch from 'node-fetch';
+import { Grommet } from 'grommet';
+
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
+  * {
+   box-sizing: border-box
+  }
+  body {
+    margin: 0
+  }
+`;
+
+// TODO: test if global theme apllies
+const theme = {
+  global: {
+    margin: 0,
+    font: {
+      family: 'Roboto'
+    }
+  }
+};
 
 const cache = new InMemoryCache();
 const client = new ApolloClient({
@@ -30,7 +52,10 @@ class CustomApp extends App {
     return (
       <ApolloProvider client={client}>
         <Container>
-          <Component {...pageProps} />
+          <Grommet theme={theme}>
+            <Component {...pageProps} />
+          </Grommet>
+          <GlobalStyle />
         </Container>
       </ApolloProvider>
     );
