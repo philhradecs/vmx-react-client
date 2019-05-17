@@ -5,8 +5,11 @@ function readYearsByIndexRange(dropValues, [start, end]) {
   return dropValues.slice(start, end + 1);
 }
 
-function createDropValuesArray(selectedYears, dropValues) {
-  if (typeof dropValues === 'object') {
+function createDropValuesArray(selectedYears = [], dropValues = []) {
+  if (selectedYears.length < 1) {
+    return undefined;
+  }
+  if (dropValues.length > 1) {
     if (selectedYears.every(year => dropValues.includes(year))) {
       return dropValues;
     }
@@ -29,17 +32,21 @@ function createDropValuesArray(selectedYears, dropValues) {
   return arr.reverse();
 }
 
-function init(initialYears) {
-  const dropValues = createDropValuesArray(initialYears);
-  const sortedYears = [...initialYears].sort();
-  let dropSelection = initialYears.map(year => dropValues.indexOf(year));
+function init(initialYears = []) {
+  let years = initialYears;
+  if (typeof years !== 'object') {
+    years = [years];
+  }
+  const dropValues = createDropValuesArray(years);
 
-  if (dropSelection.length < 2) {
+  let dropSelection = years ? years.map(year => dropValues.indexOf(year)) : [];
+
+  if (dropSelection.length === 1) {
     dropSelection = dropSelection.concat(dropSelection);
   }
 
   const initialState = {
-    years: sortedYears,
+    years,
     dropValues,
     dropSelection,
     yearDropOpen: false
@@ -86,8 +93,8 @@ function reducer(state, action) {
       return { ...state, yearDropOpen: true };
     case 'closeDrop':
       return { ...state, yearDropOpen: false };
-    case 'readyInput':
-      return { ...state, yearDropOpen: true };
+    case 'clearField':
+      return init(action.payload);
     default:
       return state;
   }
