@@ -1,10 +1,14 @@
 import { Box, TextInput } from 'grommet';
 import { useEffect, useRef, useState } from 'react';
 
-function findAndSortMatches(items, keyword, sortFunc) {
+function findAndSortMatches(items, keyword, sortFunc, suggestionUser) {
   const re = new RegExp(keyword, 'i');
-  const foundMatches = items.filter(({ label }) => label.match(re));
+  let foundMatches = items.filter(({ label }) => label.match(re));
   foundMatches.sort(sortFunc);
+  if (suggestionUser) {
+    const userEntry = { label: keyword, value: 'style' };
+    foundMatches = [userEntry, ...foundMatches];
+  }
 
   return foundMatches;
 }
@@ -12,6 +16,7 @@ function findAndSortMatches(items, keyword, sortFunc) {
 export default function InputAutosuggestion({
   suggestionSort,
   suggestionList,
+  suggestionUser,
   ...formProps
 }) {
   const [matches, setMatches] = useState([]);
@@ -22,7 +27,8 @@ export default function InputAutosuggestion({
       const foundMatches = findAndSortMatches(
         suggestionList,
         formProps.value,
-        suggestionSort
+        suggestionSort,
+        suggestionUser
       );
       setMatches(foundMatches);
     } else {

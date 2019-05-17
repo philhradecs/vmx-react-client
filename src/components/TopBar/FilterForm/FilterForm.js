@@ -51,6 +51,7 @@ export default function FilterForm({ initialFormValues }) {
           component={InputAutosuggestion}
           suggestionSort={sortMusicType}
           suggestionList={musicTypes}
+          suggestionUser
           placeholder="type here"
         />
         <FormField
