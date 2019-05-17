@@ -2,17 +2,17 @@ import { Box } from 'grommet';
 import FilterForm from '../FilterForm/FilterForm';
 import ViewSettings from '../FilterForm/ViewSettings';
 
-function ControlBox({ isCollapsed }) {
+function ControlBox({ isCollapsed, initialFormValues }) {
   return (
     <Box
       height={isCollapsed ? 'xsmall' : 'small'}
       direction="row"
-      justify="around"
+      justify="center"
       align="center"
       fill
     >
-      <FilterForm isCollapsed />
-      <ViewSettings isCollapsed />
+      <FilterForm isCollapsed initialFormValues={initialFormValues} />
+      {/* <ViewSettings isCollapsed /> */}
     </Box>
   );
 }

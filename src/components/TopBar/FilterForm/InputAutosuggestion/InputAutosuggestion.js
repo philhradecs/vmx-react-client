@@ -1,22 +1,29 @@
 import { Box, TextInput } from 'grommet';
 import { useEffect, useRef, useState } from 'react';
-import countries from './countryList';
 
-function findAndSortMatches(items, keyword) {
+function findAndSortMatches(items, keyword, sortFunc) {
   const re = new RegExp(keyword, 'i');
-  const foundMatches = items.filter(country => country.match(re));
-  foundMatches.sort();
+  const foundMatches = items.filter(({ label }) => label.match(re));
+  foundMatches.sort(sortFunc);
 
   return foundMatches;
 }
 
-export default function CountryInputDrop({ initialValue, ...formProps }) {
+export default function InputAutosuggestion({
+  suggestionSort,
+  suggestionList,
+  ...formProps
+}) {
   const [matches, setMatches] = useState([]);
   const inputEl = useRef(null);
 
   useEffect(() => {
     if (formProps.value && formProps.value.length > 1) {
-      const foundMatches = findAndSortMatches(countries, formProps.value);
+      const foundMatches = findAndSortMatches(
+        suggestionList,
+        formProps.value,
+        suggestionSort
+      );
       setMatches(foundMatches);
     } else {
       setMatches([]);
@@ -24,7 +31,7 @@ export default function CountryInputDrop({ initialValue, ...formProps }) {
   }, [formProps.value]);
 
   function handleSelect(event) {
-    inputEl.current.value = event.suggestion;
+    inputEl.current.value = event.suggestion.label;
     formProps.onChange(event);
   }
 

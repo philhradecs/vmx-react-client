@@ -5,12 +5,12 @@ import YearHotInput from './YearHotInput';
 import { init, dropValuesRange, dropEntries, reducer } from './reducer';
 
 // TODO: serialize and parse functions from props
-function serializeYears(arr) {
+function serializeYears(arr = []) {
   const list = arr.sort();
   return list.length > 1 ? `${list[0]} - ${list[list.length - 1]}` : list[0];
 }
 
-function inputParser(yearInput) {
+function inputParser(yearInput = '') {
   const hasValue = yearInput.toString().match(/\d{4}/g);
   if (!hasValue) {
     return false;
@@ -32,11 +32,9 @@ function inputParser(yearInput) {
   return eachWithinRange(yearArr) && validRangeSpan(yearArr) && yearArr.sort();
 }
 
-export default function YearInputRange({ initialValue, ...formProps }) {
-  const [state, dispatch] = useReducer(reducer, initialValue, init);
+export default function YearInputRange({ ...formProps }) {
+  const [state, dispatch] = useReducer(reducer, formProps.value, init);
   const inputEl = useRef();
-
-  useEffect(() => {}, [state.years]);
 
   return (
     <>

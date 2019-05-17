@@ -1,42 +1,62 @@
 import { Box, Button, Form, FormField, TextInput } from 'grommet';
+import Router from 'next/router';
 import YearInputRange from './YearInputRange/YearInputRange';
-import GenreInputDrop from './GenreInputDrop/GenreInputDrop';
-import CountryInputDrop from './CountryInputDrop/CountryInputDrop';
+import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
+import musicTypes from './InputAutosuggestion/data/discogsMusicTypes190510';
+import countries from './InputAutosuggestion/data/countryList';
 
-export default function FilterForm(props) {
+const sortMusicType = (a, b) => {
+  if (b.value === 'genre') {
+    return 1;
+  }
+  return a.label > b.label;
+};
+
+export default function FilterForm({ initialFormValues }) {
+  function handleSubmit(event) {
+    const cleanValues = JSON.parse(
+      JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
+    );
+    Router.push({ pathname: '/explorer', query: cleanValues });
+  }
+
   return (
-    <Form onSubmit={({ value }) => console.log(value)}>
+    <Form onSubmit={handleSubmit} value={initialFormValues}>
       <Box direction="row" justify="between" align="center">
         <FormField
-          name="keyword"
+          name="query"
           label="Keyword"
           component={TextInput}
+          onClick={event => event.target.select()}
           placeholder="type here"
         />
         <FormField
           name="artist"
           label="Artist"
           component={TextInput}
+          onClick={event => event.target.select()}
           placeholder="type here"
         />
         <FormField
           name="country"
           label="Country"
-          component={CountryInputDrop}
+          component={InputAutosuggestion}
+          suggestionSort={() => {}}
+          suggestionList={countries}
           placeholder="type here"
         />
         <FormField
           name="musicType"
           label="Genre"
-          component={GenreInputDrop}
-          initialValue=""
+          component={InputAutosuggestion}
+          suggestionSort={sortMusicType}
+          suggestionList={musicTypes}
           placeholder="type here"
         />
         <FormField
-          name="year"
+          name="years"
           label="Time"
           component={YearInputRange}
-          initialValue={[1975]}
           placeholder="type here"
         />
         <Button type="submit" label="Search" />

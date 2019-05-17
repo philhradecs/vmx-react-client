@@ -1,4 +1,4 @@
-const musicvalues = [
+export default [
   {
     label: 'Pop Rock',
     value: 'style'
@@ -2220,5 +2220,3 @@ const musicvalues = [
     value: 'genre'
   }
 ];
-
-export default musicvalues;

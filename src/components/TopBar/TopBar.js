@@ -4,13 +4,16 @@ import { Up, Down } from 'grommet-icons';
 
 import ControlBox from './ControlBox/ControlBox';
 
-function TopBar() {
+function TopBar({ initialFormValues }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <>
       <Collapsible open={!isCollapsed}>
-        <ControlBox isCollapsed={isCollapsed} />
+        <ControlBox
+          isCollapsed={isCollapsed}
+          initialFormValues={initialFormValues}
+        />
       </Collapsible>
       <Box tag="header" direction="row" align="center" justify="center">
         {isCollapsed ? (
