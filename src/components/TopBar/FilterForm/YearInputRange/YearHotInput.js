@@ -29,10 +29,9 @@ export default forwardRef(function YearHotInput(
     }
   }, [input]);
 
-  function handleInputFocus() {
-    if (activeYears.length > 0) {
-      dispatch({ type: 'openDrop' });
-    }
+  function handleInputFocusClick(event) {
+    event.target.select();
+    dispatch({ type: 'openDrop' });
   }
 
   function handleKeyDown(event) {
@@ -52,10 +51,10 @@ export default forwardRef(function YearHotInput(
       type="string"
       value={input}
       onChange={event => setInput(event.target.value)}
-      onFocusCapture={handleInputFocus}
+      onFocusCapture={handleInputFocusClick}
       onKeyDown={handleKeyDown}
       plain
-      onClick={event => event.target.select()}
+      onClick={handleInputFocusClick}
       name={formProps.name}
       ref={ref}
       placeholder={formProps.placeholder}

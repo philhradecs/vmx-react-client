@@ -1,4 +1,4 @@
-const dropValuesRange = [1900, 2020]; // TODO: parameters from props
+const dropValuesRange = [1900, 2019]; // TODO: parameters from props
 const dropEntries = 10;
 
 function readYearsByIndexRange(dropValues, [start, end]) {
@@ -7,7 +7,7 @@ function readYearsByIndexRange(dropValues, [start, end]) {
 
 function createDropValuesArray(selectedYears = [], dropValues = []) {
   if (selectedYears.length < 1) {
-    return undefined;
+    return [];
   }
   if (dropValues.length > 1) {
     if (selectedYears.every(year => dropValues.includes(year))) {
@@ -34,15 +34,23 @@ function createDropValuesArray(selectedYears = [], dropValues = []) {
 
 function init(initialYears = []) {
   let years = initialYears;
-  if (typeof years !== 'object') {
+  if (typeof years === 'string') {
     years = [years];
   }
-  const dropValues = createDropValuesArray(years);
 
-  let dropSelection = years ? years.map(year => dropValues.indexOf(year)) : [];
+  let dropValues = [];
+  let dropSelection = [];
 
-  if (dropSelection.length === 1) {
-    dropSelection = dropSelection.concat(dropSelection);
+  if (years.length === 0) {
+    dropValues = createDropValuesArray([dropValuesRange[1]]);
+    const randomIndex = Math.floor(Math.random() * dropEntries);
+    dropSelection = [randomIndex, randomIndex];
+  } else {
+    dropValues = createDropValuesArray(years);
+    dropSelection = years.map(year => dropValues.indexOf(year));
+    if (dropSelection.length === 1) {
+      dropSelection = dropSelection.concat(dropSelection);
+    }
   }
 
   const initialState = {
