@@ -58,11 +58,11 @@ export default function YearSelectDrop({
     dispatch({ type: 'closeDrop' });
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     dispatch({ type: 'applyUserSelection', payload: selection });
   }, [selection]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setSelection(presetSelection);
   }, [presetSelection]);
 
