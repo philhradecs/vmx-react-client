@@ -11,6 +11,7 @@ export default forwardRef(function YearHotInput(
     formProps.onChange({ value: years });
   }
 
+  // TODO optimize performance and stability
   useLayoutEffect(() => {
     setInput(serializeYears(activeYears));
     updateFormValue(activeYears);
@@ -42,8 +43,6 @@ export default forwardRef(function YearHotInput(
       dispatch({ type: 'decrementDropValues' });
     }
   }
-
-  // TODO: add scroll to inc & dec dropValues
 
   return (
     <TextInput

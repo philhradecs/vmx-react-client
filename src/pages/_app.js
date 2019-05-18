@@ -16,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-// TODO: test if global theme apllies
+// TODO: test if global theme applies
 const theme = {
   global: {
     margin: 0,
@@ -31,7 +31,7 @@ const client = new ApolloClient({
   cache,
   link: new HttpLink({
     fetch,
-    uri: 'http://localhost:4000/'
+    uri: 'http://localhost:4000/graphql'
   })
 });
 
@@ -42,7 +42,7 @@ class CustomApp extends App {
       pageProps = await Component.getInitialProps(ctx);
     }
     // this exposes the query to the user
-    pageProps.query = ctx.query;
+    // pageProps.query = ctx.query;
     return { pageProps };
   }
 

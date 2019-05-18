@@ -43,6 +43,7 @@ export default function FilterForm({ initialFormValues }) {
           component={InputAutosuggestion}
           suggestionSort={() => {}}
           suggestionList={countries}
+          suggestionUser
           placeholder="type here"
         />
         <FormField
