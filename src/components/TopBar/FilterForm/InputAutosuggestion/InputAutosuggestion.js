@@ -8,18 +8,35 @@ export default function InputAutosuggestion({
   ...formProps
 }) {
   const [matches, setMatches] = useState([]);
-  const inputEl = useRef(null);
 
   function findAndSortMatches(keyword) {
     const re = new RegExp(keyword, 'i');
     let foundMatches = suggestionList.filter(({ label }) => label.match(re));
     foundMatches.sort(suggestionSort);
+
     if (suggestionUser) {
-      const userEntry = { label: keyword, value: 'style' };
-      foundMatches = [userEntry, ...foundMatches];
+      const isDuplicate =
+        foundMatches.length > 0
+          ? foundMatches.some(
+              ({ label }) => label.toLowerCase() === keyword.toLowerCase()
+            )
+          : false;
+      if (!isDuplicate) {
+        const userEntry = { label: keyword, value: 'style' };
+        foundMatches = [userEntry, ...foundMatches];
+      }
     }
 
     return foundMatches;
+  }
+
+  function sanitizeInput(input) {
+    return input
+      .split(' ')
+      .map(
+        word => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
+      )
+      .join(' ');
   }
 
   useEffect(() => {
@@ -33,14 +50,13 @@ export default function InputAutosuggestion({
   }, [formProps.value]);
 
   function handleSelect(event) {
-    inputEl.current.value = event.suggestion.label;
-    formProps.onChange(event);
+    const sanitizedInput = sanitizeInput(event.suggestion.label);
+    formProps.onChange({ value: sanitizedInput });
   }
 
   return (
     <TextInput
       name
-      ref={inputEl}
       dropAlign={{ top: 'bottom', left: 'left' }}
       dropContent={<Box pad="large" background="light-2" />}
       suggestions={matches}
