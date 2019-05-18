@@ -12,9 +12,10 @@ import combineSearchData from '../utils/combineSearchData';
 function formatQueryForApollo(queryParam) {
   const query = { ...queryParam };
   if (Object.prototype.hasOwnProperty.call(query, 'musicType')) {
-    const matchedType = musicTypes.find(
+    const matchedTypeEntry = musicTypes.find(
       ({ label }) => label === query.musicType
-    ).value;
+    );
+    const matchedType = matchedTypeEntry ? matchedTypeEntry.value : 'style';
     query[matchedType] = query.musicType;
     delete query.musicType;
   }
@@ -37,7 +38,12 @@ const Explorer = withRouter(({ router }) => {
 
           const combinedData = combineSearchData(data.searchReleases);
           if (combinedData.items === 0) return 'No Results!';
-          return <CoverGrid data={combinedData} />;
+          return (
+            <>
+              <div>{JSON.stringify(apolloQuery)}</div>
+              <CoverGrid data={combinedData} />
+            </>
+          );
         }}
       </Query>
     </Box>
