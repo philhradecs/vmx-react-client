@@ -38,11 +38,11 @@ const client = new ApolloClient({
 class CustomApp extends App {
   static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
-
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx);
     }
-
+    // this exposes the query to the user
+    pageProps.query = ctx.query;
     return { pageProps };
   }
 

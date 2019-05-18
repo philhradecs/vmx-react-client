@@ -1,6 +1,6 @@
 import { Box } from 'grommet';
 import FilterForm from '../FilterForm/FilterForm';
-import ViewSettings from '../FilterForm/ViewSettings';
+import ViewSettings from '../ViewSettings/ViewSettings';
 
 function ControlBox({ isCollapsed, initialFormValues }) {
   return (
