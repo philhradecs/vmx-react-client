@@ -7,9 +7,8 @@ function ControlBox({ isCollapsed, initialFormValues }) {
     <Box
       height={isCollapsed ? 'xsmall' : 'small'}
       direction="row"
-      justify="center"
+      fill="horizontal"
       align="center"
-      fill
     >
       <FilterForm isCollapsed initialFormValues={initialFormValues} />
       {/* <ViewSettings isCollapsed /> */}
