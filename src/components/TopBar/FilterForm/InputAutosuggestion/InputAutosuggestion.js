@@ -8,6 +8,7 @@ export default function InputAutosuggestion({
   ...formProps
 }) {
   const [matches, setMatches] = useState([]);
+  const [initialRender, setInitialRender] = useState(true);
 
   function findAndSortMatches(keyword) {
     const re = new RegExp(keyword, 'i');
@@ -41,12 +42,13 @@ export default function InputAutosuggestion({
 
   useEffect(() => {
     const currentValue = formProps.value;
-    if (currentValue && currentValue.length > 1) {
+    if (!initialRender && currentValue && currentValue.length > 1) {
       const foundMatches = findAndSortMatches(currentValue);
       setMatches(foundMatches);
     } else {
       setMatches([]);
     }
+    setInitialRender(false);
   }, [formProps.value]);
 
   function handleSelect(event) {
@@ -54,14 +56,17 @@ export default function InputAutosuggestion({
     formProps.onChange({ value: sanitizedInput });
   }
 
+  function handleClick(event) {
+    event.target.select();
+  }
+
   return (
     <TextInput
       name
       dropAlign={{ top: 'bottom', left: 'left' }}
-      dropContent={<Box pad="large" background="light-2" />}
       suggestions={matches}
       onSelect={handleSelect}
-      onClick={event => event.target.select()}
+      onClick={handleClick}
       dropProps={{
         pad: { horizontal: '0.8rem', vertical: '0.5rem' },
         elevation: 'small'
