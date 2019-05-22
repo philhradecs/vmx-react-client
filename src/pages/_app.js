@@ -9,17 +9,15 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   * {
-   box-sizing: border-box
+   box-sizing: border-box;
   }
-  body {
-    margin: 0
+  body, html {
+    margin: 0;
+    height: 100%;
   }
 `;
-
-// TODO: test if global theme applies
 const theme = {
   global: {
-    margin: 0,
     font: {
       family: 'Roboto'
     }
