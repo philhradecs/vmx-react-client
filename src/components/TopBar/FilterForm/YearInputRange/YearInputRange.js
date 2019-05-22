@@ -1,40 +1,25 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useReducer, useRef, useCallback } from 'react';
 
 import YearSelectDrop from './YearSelectDrop';
 import YearHotInput from './YearHotInput';
-import { init, dropValuesRange, dropEntries, reducer } from './reducer';
+import initReducer from './lib/initReducer';
+import parserSerializer from './lib/parserSerializer';
 
-// TODO: serialize and parse functions from props
-function serializeYears(arr = []) {
-  const list = arr.sort();
-  return list.length > 1 ? `${list[0]} - ${list[list.length - 1]}` : list[0];
-}
+export default function YearInputRange({
+  dropValuesRange,
+  dropEntries,
+  ...formProps
+}) {
+  const { parser, serializer } = parserSerializer(dropValuesRange, dropEntries);
+  const { init, reducer } = initReducer(dropValuesRange, dropEntries);
 
-function inputParser(yearInput = '') {
-  const hasValue = yearInput.toString().match(/\d{4}/g);
-  if (!hasValue) {
-    return false;
-  }
-
-  const extractedValues = hasValue.map(val => +val);
-
-  const yearArr =
-    extractedValues.length > 2
-      ? [extractedValues[0], extractedValues[1]]
-      : extractedValues;
-
-  const [min, max] = dropValuesRange;
-
-  const eachWithinRange = arr => arr.every(val => val >= min && val <= max);
-  const validRangeSpan = arr =>
-    Math.abs(arr[0] - arr[arr.length - 1]) <= dropEntries - 1;
-
-  return eachWithinRange(yearArr) && validRangeSpan(yearArr) && yearArr.sort();
-}
-
-export default function YearInputRange({ ...formProps }) {
   const [state, dispatch] = useReducer(reducer, formProps.value, init);
   const inputEl = useRef();
+
+  const memoizedParser = useCallback(input => parser(input), [parser]);
+  const memoizedSerializer = useCallback(input => serializer(input), [
+    serializer
+  ]);
 
   return (
     <>
@@ -42,8 +27,8 @@ export default function YearInputRange({ ...formProps }) {
         dispatch={dispatch}
         activeYears={state.years}
         ref={inputEl}
-        inputParser={inputParser}
-        serializeYears={serializeYears}
+        inputParser={memoizedParser}
+        serializeYears={memoizedSerializer}
         {...formProps}
       />
       {state.yearDropOpen && (
