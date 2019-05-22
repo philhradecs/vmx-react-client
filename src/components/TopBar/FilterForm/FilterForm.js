@@ -59,7 +59,9 @@ export default function FilterForm({ initialFormValues }) {
           name="years"
           label="Time"
           component={YearInputRange}
-          placeholder="type here"
+          dropValuesRange={[1900, 2019]}
+          dropEntries={10}
+          placeholder="1970 - 1979"
         />
         <Button type="submit" label="Search" />
       </Box>
