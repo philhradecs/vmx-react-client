@@ -1,4 +1,4 @@
-function initReducer(numRange, maxSpan) {
+function initReducer(numRange, maxSpan, serializer, parser) {
   function readYearsByIndexRange(dropValues, [start, end]) {
     return dropValues.slice(start, end + 1);
   }
@@ -22,6 +22,7 @@ function initReducer(numRange, maxSpan) {
       { length: maxSpan },
       (v, k) => centralValue + k - Math.ceil(maxSpan / 2)
     );
+
     if (arr[0] < numRange[0]) {
       arr = arr.map(num => num + numRange[0] - arr[0]);
     } else if (arr[arr.length - 1] > numRange[1]) {
@@ -31,28 +32,21 @@ function initReducer(numRange, maxSpan) {
   }
 
   function init(initialYears = []) {
-    let years = initialYears;
-    if (typeof years === 'string') {
-      years = [years];
-    }
-
-    let dropValues = [];
-    let dropSelection = [];
-
-    if (years.length === 0) {
-      dropValues = createDropValuesArray([numRange[1]]);
-      const randomIndex = Math.floor(Math.random() * maxSpan);
-      dropSelection = [randomIndex, randomIndex];
-    } else {
-      dropValues = createDropValuesArray(years);
-      dropSelection = years.map(year => dropValues.indexOf(year));
-      if (dropSelection.length === 1) {
-        dropSelection = dropSelection.concat(dropSelection);
-      }
-    }
+    let selectedYears = initialYears === '' ? [] : initialYears;
+    selectedYears = selectedYears.map(val => +val);
+    const inputValue = serializer(selectedYears);
+    const dropValues = createDropValuesArray(selectedYears);
+    const dropSelection =
+      selectedYears.length === 0
+        ? []
+        : [
+            dropValues.indexOf(selectedYears[selectedYears.length - 1]),
+            dropValues.indexOf(selectedYears[0])
+          ].sort();
 
     const initialState = {
-      years,
+      inputValue,
+      selectedYears,
       dropValues,
       dropSelection,
       yearDropOpen: false
@@ -62,44 +56,86 @@ function initReducer(numRange, maxSpan) {
 
   function reducer(state, action) {
     switch (action.type) {
-      case 'applyUserInput': {
-        const years = action.payload;
-        const newDropValues = createDropValuesArray(years, state.dropValues);
+      case 'parseInput': {
+        const input = action.payload;
+        const parsedValues = parser(input, numRange, maxSpan);
+        if (
+          parsedValues &&
+          parsedValues.length > 0 &&
+          !parsedValues.every((val, i) => val === state.selectedYears[i])
+        ) {
+          const newDropValues = createDropValuesArray(
+            parsedValues,
+            state.dropValues
+          );
+          const newDropSelection = [
+            newDropValues.indexOf(parsedValues[parsedValues.length - 1]),
+            newDropValues.indexOf(parsedValues[0])
+          ].sort();
+
+          return {
+            inputValue: serializer(parsedValues),
+            selectedYears: parsedValues,
+            dropValues: newDropValues,
+            dropSelection: newDropSelection,
+            yearDropOpen: true
+          };
+        }
+
         return {
           ...state,
-          years,
-          dropValues: newDropValues,
-          dropSelection: [
-            newDropValues.indexOf(years[years.length - 1]),
-            newDropValues.indexOf(years[0])
-          ].sort()
+          inputValue: input
         };
       }
-      case 'applyUserSelection':
+      case 'applyNewSelection': {
+        const newDropSelection = action.payload;
+        const newSelectedYears = readYearsByIndexRange(
+          state.dropValues,
+          newDropSelection
+        );
         return {
           ...state,
-          dropSelection: action.payload,
-          years: readYearsByIndexRange(state.dropValues, action.payload)
+          inputValue: serializer(newSelectedYears),
+          dropSelection: newDropSelection,
+          selectedYears: newSelectedYears
         };
+      }
       case 'incrementDropValues': {
+        const newSelectedYears = state.selectedYears.map(val => val + 1);
         return {
           ...state,
+          inputValue: serializer(newSelectedYears),
           dropValues: state.dropValues.map(val => val + 1),
-          years: state.years.map(val => val + 1)
+          selectedYears: newSelectedYears
         };
       }
       case 'decrementDropValues': {
+        const selectedYears = state.selectedYears.map(val => val - 1);
         return {
           ...state,
+          inputValue: serializer(selectedYears),
           dropValues: state.dropValues.map(val => val - 1),
-          years: state.years.map(val => val - 1)
+          selectedYears
         };
       }
-      case 'openDrop':
-        return { ...state, yearDropOpen: true };
+      case 'openDrop': {
+        let newState = {};
+
+        if (state.dropValues.length === 0) {
+          const [min, max] = numRange;
+          const randomValue = Math.floor(min + Math.random() * (max + 1 - min));
+          newState = init([randomValue]);
+        }
+
+        return {
+          ...state,
+          ...newState,
+          yearDropOpen: true
+        };
+      }
       case 'closeDrop':
         return { ...state, yearDropOpen: false };
-      case 'clearField':
+      case 'reset':
         return init(action.payload);
       default:
         return state;
