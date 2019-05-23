@@ -7,7 +7,7 @@ import CoverGrid from '../components/CoverGrid/CoverGrid';
 
 import musicTypes from '../components/TopBar/FilterForm/InputAutosuggestion/data/discogsMusicTypes190510';
 import { GET_SEARCH_RELEASES } from '../queries';
-import combineSearchData from '../utils/combineSearchData';
+import { combineSearchData } from '../utils/dataUtils';
 
 function formatQueryForApollo(queryParam) {
   const query = { ...queryParam };
@@ -30,22 +30,25 @@ const Explorer = withRouter(({ router }) => {
 
   return (
     <Box>
-      <TopBar initialFormValues={router.query} />
-      <Query query={GET_SEARCH_RELEASES} variables={apolloQuery}>
-        {({ data, loading, error, fetchMore }) => {
-          if (loading) return 'Loading';
-          if (error) return `Error: ${error.message}`;
+      <Box direction="column" height="100vh">
+        <TopBar initialFormValues={router.query} />
+        <Box overflow="auto" height="100%">
+          <Query query={GET_SEARCH_RELEASES} variables={apolloQuery}>
+            {({ data, loading, error, fetchMore }) => {
+              if (loading) return 'Loading';
+              if (error) return `Error: ${error.message}`;
 
-          const combinedData = combineSearchData(data.searchReleases);
-          if (combinedData.items === 0) return 'No Results!';
-          return (
-            <>
-              <div>{JSON.stringify(apolloQuery)}</div>
-              <CoverGrid data={combinedData} />
-            </>
-          );
-        }}
-      </Query>
+              const combinedData = combineSearchData(data.searchReleases);
+
+              return combinedData.results.length === 0 ? (
+                'No Results'
+              ) : (
+                <CoverGrid columns={5} data={combinedData} />
+              );
+            }}
+          </Query>
+        </Box>
+      </Box>
     </Box>
   );
 });
