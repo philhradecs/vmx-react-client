@@ -26,6 +26,8 @@
     "react": "^16.8.6",
     "react-apollo": "^2.5.5",
     "react-dom": "^16.8.6",
+    "react-ratio": "^0.1.5",
+    "react-use-hover": "^1.0.0",
     "styled-components": "^4.2.0"
   },
   "devDependencies": {
