@@ -1,36 +1,13 @@
-import { forwardRef, useEffect, useLayoutEffect, useState } from 'react';
+import { forwardRef, useContext } from 'react';
 import { TextInput } from 'grommet';
+import { DispatchContext, StateContext } from './lib/contexts';
 
-export default forwardRef(function YearHotInput(
-  { activeYears, dispatch, serializeYears, inputParser, ...formProps },
-  ref
-) {
-  const [input, setInput] = useState(serializeYears(activeYears));
+export default forwardRef(function YearHotInput({ name, placeholder }, ref) {
+  const dispatch = useContext(DispatchContext);
+  const state = useContext(StateContext);
+  const { selectedYears, inputValue } = state;
 
-  function updateFormValue(years) {
-    formProps.onChange({ value: years });
-  }
-
-  // TODO optimize performance and stability
-  useLayoutEffect(() => {
-    setInput(serializeYears(activeYears));
-    updateFormValue(activeYears);
-  }, [activeYears]);
-
-  useEffect(() => {
-    if (input === '') {
-      dispatch({ type: 'clearField' });
-    } else {
-      const newYears = inputParser(input);
-      if (newYears && !newYears.every((year, i) => year === activeYears[i])) {
-        dispatch({ type: 'applyUserInput', payload: newYears });
-        dispatch({ type: 'openDrop' });
-        updateFormValue(newYears);
-      }
-    }
-  }, [input]);
-
-  function handleInputFocusClick(event) {
+  function selectTextAndOpenDrop(event) {
     event.target.select();
     dispatch({ type: 'openDrop' });
   }
@@ -44,19 +21,28 @@ export default forwardRef(function YearHotInput(
     }
   }
 
+  function handleChange(event) {
+    event.persist();
+    if (event.target.value === '' && selectedYears.length > 0) {
+      dispatch({ type: 'reset' });
+    } else {
+      dispatch({ type: 'parseInput', payload: event.target.value });
+    }
+  }
+
   return (
     <TextInput
       id="yearInput"
       type="string"
-      value={input}
-      onChange={event => setInput(event.target.value)}
-      onFocusCapture={handleInputFocusClick}
+      value={inputValue}
+      onChange={handleChange}
+      onFocusCapture={selectTextAndOpenDrop}
       onKeyDown={handleKeyDown}
       plain
-      onClick={handleInputFocusClick}
-      name={formProps.name}
+      onClick={selectTextAndOpenDrop}
+      name={name}
       ref={ref}
-      placeholder={formProps.placeholder}
+      placeholder={placeholder}
     />
   );
 });

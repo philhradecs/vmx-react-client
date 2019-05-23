@@ -1,16 +1,13 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useContext } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
 import { CaretDown, CaretUp } from 'grommet-icons';
+import { DispatchContext, StateContext, ConfigContext } from './lib/contexts';
 
-export default function YearSelectDrop({
-  dispatch,
-  dropValues,
-  dropValuesRange,
-  presetSelection,
-  entries,
-  textInputRef
-}) {
-  const [selection, setSelection] = useState(presetSelection);
+export default function YearSelectDrop({ textInputRef }) {
+  const dispatch = useContext(DispatchContext);
+  const state = useContext(StateContext);
+  const { dropValuesRange, dropEntries } = useContext(ConfigContext);
+  const { dropSelection, dropValues } = state;
 
   function adaptToUserRangeMod(direction) {
     const [rangeMin, rangeMax] = dropValuesRange;
@@ -21,22 +18,32 @@ export default function YearSelectDrop({
       case 'inc': {
         if (years[years.length - 1] < rangeMax) {
           dispatch({ type: 'incrementDropValues' });
-        } else if (selection[0] > 0) {
-          setSelection(selection.map(idx => idx - 1));
+        } else if (dropSelection[0] > 0) {
+          dispatch({
+            type: 'applyNewSelection',
+            payload: dropSelection.map(idx => idx - 1)
+          });
         }
         break;
       }
       case 'dec': {
         if (years[0] > rangeMin) {
           dispatch({ type: 'decrementDropValues' });
-        } else if (selection[1] < entries - 1) {
-          setSelection(selection.map(idx => idx + 1));
+        } else if (dropSelection[1] < dropEntries - 1) {
+          dispatch({
+            type: 'applyNewSelection',
+            payload: dropSelection.map(idx => idx + 1)
+          });
         }
         break;
       }
       default:
         break;
     }
+  }
+
+  function handleChange(newSelection) {
+    dispatch({ type: 'applyNewSelection', payload: newSelection });
   }
 
   function handleScroll(event) {
@@ -58,15 +65,7 @@ export default function YearSelectDrop({
     dispatch({ type: 'closeDrop' });
   }
 
-  useEffect(() => {
-    dispatch({ type: 'applyUserSelection', payload: selection });
-  }, [selection]);
-
-  useEffect(() => {
-    setSelection(presetSelection);
-  }, [presetSelection]);
-
-  const numArray = Array.from({ length: entries }, (v, k) => k);
+  const numArray = Array.from({ length: dropEntries }, (v, k) => k);
 
   return (
     <Drop
@@ -107,12 +106,12 @@ export default function YearSelectDrop({
           id="rangeSelector"
           direction="vertical"
           min={0}
-          max={entries - 1}
+          max={dropEntries - 1}
           invert={false}
           size="medium"
           round="xxsmall"
-          values={selection}
-          onChange={values => setSelection(values)}
+          values={dropSelection}
+          onChange={handleChange}
         />
       </Stack>
       <Box
