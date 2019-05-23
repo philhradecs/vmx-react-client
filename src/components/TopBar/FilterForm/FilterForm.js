@@ -4,6 +4,7 @@ import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
 import musicTypes from './InputAutosuggestion/data/discogsMusicTypes190510';
 import countries from './InputAutosuggestion/data/countryList';
+import { parser, serializer } from './YearInputRange/lib/parserSerializer';
 
 const sortMusicType = (a, b) => {
   if (b.value === 'genre') {
@@ -62,6 +63,8 @@ export default function FilterForm({ initialFormValues }) {
           dropValuesRange={[1900, 2019]}
           dropEntries={10}
           placeholder="1970 - 1979"
+          parser={parser}
+          serializer={serializer}
         />
         <Button type="submit" label="Search" />
       </Box>
