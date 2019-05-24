@@ -32,7 +32,14 @@ function initReducer(numRange, maxSpan, serializer, parser) {
   }
 
   function init(initialYears = []) {
-    let selectedYears = initialYears === '' ? [] : initialYears;
+    let selectedYears = initialYears;
+    if (typeof selectedYears === 'string') {
+      if (selectedYears.length === 0) {
+        selectedYears = [];
+      } else {
+        selectedYears = [selectedYears];
+      }
+    }
     selectedYears = selectedYears.map(val => +val);
     const inputValue = serializer(selectedYears);
     const dropValues = createDropValuesArray(selectedYears);
