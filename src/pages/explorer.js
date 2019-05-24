@@ -1,3 +1,4 @@
+import { useRef, useState, useLayoutEffect } from 'react';
 import { withRouter } from 'next/router';
 import { Query } from 'react-apollo';
 import { Box } from 'grommet';
@@ -27,12 +28,19 @@ function formatQueryForApollo(queryParam) {
 
 const Explorer = withRouter(({ router }) => {
   const apolloQuery = formatQueryForApollo(router.query);
+  const [gridHeight, setGridHeight] = useState(null);
+  const gridBox = useRef();
+
+  // FIXME: update height on top bar collapse
+  useLayoutEffect(() => {
+    setGridHeight(`${gridBox.current.clientHeight}px`);
+  }, []);
 
   return (
     <Box>
       <Box direction="column" height="100vh">
-        <TopBar initialFormValues={router.query} />
-        <Box overflow="auto" height="100%">
+        <TopBar prevQuery={router.query} />
+        <Box overflow="auto" height="100%" ref={gridBox}>
           <Query query={GET_SEARCH_RELEASES} variables={apolloQuery}>
             {({ data, loading, error, fetchMore }) => {
               if (loading) return 'Loading';
@@ -43,7 +51,11 @@ const Explorer = withRouter(({ router }) => {
               return combinedData.results.length === 0 ? (
                 'No Results'
               ) : (
-                <CoverGrid columns={5} data={combinedData} />
+                <CoverGrid
+                  columns={5}
+                  data={combinedData}
+                  gridHeight={gridHeight}
+                />
               );
             }}
           </Query>
