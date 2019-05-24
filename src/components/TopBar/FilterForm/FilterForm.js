@@ -13,7 +13,7 @@ const sortMusicType = (a, b) => {
   return a.label > b.label;
 };
 
-export default function FilterForm({ initialFormValues }) {
+export default function FilterForm({ prevQuery }) {
   function handleSubmit(event) {
     const cleanValues = JSON.parse(
       JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
@@ -22,7 +22,7 @@ export default function FilterForm({ initialFormValues }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit} value={initialFormValues}>
+    <Form onSubmit={handleSubmit} value={prevQuery}>
       <Box direction="row" justify="between" align="center">
         <FormField
           name="query"

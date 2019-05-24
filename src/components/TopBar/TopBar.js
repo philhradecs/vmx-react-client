@@ -4,16 +4,13 @@ import CollapsibleControl from './CollapsibleControl/CollapsibleControl';
 
 import ControlBox from './ControlBox/ControlBox';
 
-function TopBar({ initialFormValues }) {
+function TopBar({ prevQuery }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <Box>
       <Collapsible open={!isCollapsed}>
-        <ControlBox
-          isCollapsed={isCollapsed}
-          initialFormValues={initialFormValues}
-        />
+        <ControlBox isCollapsed={isCollapsed} prevQuery={prevQuery} />
       </Collapsible>
       <CollapsibleControl
         isCollapsed={isCollapsed}
