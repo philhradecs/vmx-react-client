@@ -1,9 +1,10 @@
 import { forwardRef, useContext } from 'react';
 import { TextInput } from 'grommet';
-import { DispatchContext, StateContext } from './lib/contexts';
+import { ConfigContext, DispatchContext, StateContext } from './lib/contexts';
 
-export default forwardRef(function YearHotInput({ name, placeholder }, ref) {
+export default forwardRef(function YearHotInput(_, ref) {
   const dispatch = useContext(DispatchContext);
+  const { placeholder, name } = useContext(ConfigContext);
   const state = useContext(StateContext);
   const { selectedYears, inputValue } = state;
 
