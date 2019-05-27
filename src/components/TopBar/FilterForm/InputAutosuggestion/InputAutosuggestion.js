@@ -1,6 +1,13 @@
 import { TextInput } from 'grommet';
 import { useCallback, useEffect, useState } from 'react';
 
+function sanitizeInput(input) {
+  return input
+    .split(/\b/)
+    .map(word => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase())
+    .join(' ');
+}
+
 export default function InputAutosuggestion({
   suggestionSort,
   suggestionList,
@@ -25,7 +32,8 @@ export default function InputAutosuggestion({
               )
             : false;
         if (!isDuplicate) {
-          const userEntry = { label: keyword, value: 'style' };
+          const sanitizedInput = sanitizeInput(keyword);
+          const userEntry = { label: sanitizedInput, value: 'style' };
           foundMatches = [userEntry, ...foundMatches];
         }
       }
@@ -44,16 +52,7 @@ export default function InputAutosuggestion({
   }, [findAndSortMatches, value, initialRender]);
 
   function handleSelect(event) {
-    function sanitizeInput(input) {
-      return input
-        .split(' ')
-        .map(
-          word => word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
-        )
-        .join(' ');
-    }
-    const sanitizedInput = sanitizeInput(event.suggestion.label);
-    formProps.onChange({ value: sanitizedInput });
+    formProps.onChange({ value: event.suggestion.label });
   }
 
   function handleFocusClick(event) {
