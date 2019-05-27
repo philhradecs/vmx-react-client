@@ -1,10 +1,10 @@
-import { forwardRef, useContext } from 'react';
+import React, { useContext } from 'react';
 import { TextInput } from 'grommet';
 import { ConfigContext, DispatchContext, StateContext } from './lib/contexts';
 
-export default forwardRef(function YearHotInput(_, ref) {
+export default React.forwardRef(function YearHotInput(_, ref) {
   const dispatch = useContext(DispatchContext);
-  const { placeholder, name } = useContext(ConfigContext);
+  const { placeholder, name, dropValuesRange } = useContext(ConfigContext);
   const state = useContext(StateContext);
   const { selectedYears, inputValue } = state;
 
@@ -13,12 +13,15 @@ export default forwardRef(function YearHotInput(_, ref) {
     dispatch({ type: 'openDrop' });
   }
 
-  function handleKeyDown(event) {
-    if (event.keyCode === 38) {
-      dispatch({ type: 'incrementDropValues' });
-    }
-    if (event.keyCode === 40) {
-      dispatch({ type: 'decrementDropValues' });
+  function handleSelectedYearsMod(mod) {
+    const [minRange, maxRange] = [...dropValuesRange];
+    const [minYear, maxYear] = [
+      selectedYears[0],
+      selectedYears[selectedYears.length - 1]
+    ];
+
+    if (minYear + mod >= minRange && maxYear + mod <= maxRange) {
+      dispatch({ type: 'shiftSelectedYears', payload: mod });
     }
   }
 
@@ -31,18 +34,40 @@ export default forwardRef(function YearHotInput(_, ref) {
     }
   }
 
+  function handleKeyDown(event) {
+    if (event.keyCode === 38) {
+      event.preventDefault();
+      handleSelectedYearsMod(+1);
+    }
+    if (event.keyCode === 40) {
+      event.preventDefault();
+      handleSelectedYearsMod(-1);
+    }
+  }
+
+  function handleWheel(event) {
+    event.preventDefault();
+
+    if (event.deltaY < 0) {
+      handleSelectedYearsMod(+1);
+    } else if (event.deltaY > 0) {
+      handleSelectedYearsMod(-1);
+    }
+  }
+
   return (
     <TextInput
+      ref={ref}
       id="yearInput"
       type="string"
       value={inputValue}
       onChange={handleChange}
-      onFocusCapture={selectTextAndOpenDrop}
+      onFocus={selectTextAndOpenDrop}
       onKeyDown={handleKeyDown}
+      onWheel={handleWheel}
       plain
       onClick={selectTextAndOpenDrop}
       name={name}
-      ref={ref}
       placeholder={placeholder}
     />
   );

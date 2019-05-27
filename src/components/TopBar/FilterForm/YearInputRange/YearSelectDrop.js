@@ -1,94 +1,83 @@
 import { useContext } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
-import { CaretDown, CaretUp } from 'grommet-icons';
-import { DispatchContext, StateContext, ConfigContext } from './lib/contexts';
+import { DispatchContext, StateContext } from './lib/contexts';
 
-export default function YearSelectDrop({ textInputRef }) {
+export default function YearSelectDrop({ inputRef }) {
   const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
-  const { dropValuesRange, dropEntries } = useContext(ConfigContext);
   const { dropSelection, dropValues } = state;
-
-  function adaptToUserRangeMod(direction) {
-    const [rangeMin, rangeMax] = dropValuesRange;
-    const years = [...dropValues];
-    years.sort();
-
-    switch (direction) {
-      case 'inc': {
-        if (years[years.length - 1] < rangeMax) {
-          dispatch({ type: 'incrementDropValues' });
-        } else if (dropSelection[0] > 0) {
-          dispatch({
-            type: 'applyNewSelection',
-            payload: dropSelection.map(idx => idx - 1)
-          });
-        }
-        break;
-      }
-      case 'dec': {
-        if (years[0] > rangeMin) {
-          dispatch({ type: 'decrementDropValues' });
-        } else if (dropSelection[1] < dropEntries - 1) {
-          dispatch({
-            type: 'applyNewSelection',
-            payload: dropSelection.map(idx => idx + 1)
-          });
-        }
-        break;
-      }
-      default:
-        break;
-    }
-  }
 
   function handleChange(newSelection) {
     dispatch({ type: 'applyNewSelection', payload: newSelection });
   }
 
-  function handleScroll(event) {
+  function handleSelectionMod(mod) {
+    const [minSelect, maxSelect] = [...dropSelection];
+    const nextSelection = [minSelect + mod, maxSelect - mod];
+    let [nextMin, nextMax] = nextSelection;
+
+    if (nextMin > nextMax) {
+      return dispatch({
+        type: 'applyNewSelection',
+        payload: [minSelect, minSelect]
+      });
+    }
+
+    if (nextMin >= 0 && !(nextMax < dropValues.length)) {
+      nextMax = maxSelect;
+    } else if (!(nextMin >= 0) && nextMax < dropValues.length) {
+      nextMin = minSelect;
+    }
+
+    if (nextMin >= 0 && nextMax < dropValues.length) {
+      return dispatch({
+        type: 'applyNewSelection',
+        payload: [nextMin, nextMax]
+      });
+    }
+
+    return undefined;
+  }
+
+  function handleWheel(event) {
     event.preventDefault();
 
     if (event.deltaY < 0) {
-      adaptToUserRangeMod('inc');
+      handleSelectionMod(-1);
     } else if (event.deltaY > 0) {
-      adaptToUserRangeMod('dec');
+      handleSelectionMod(+1);
     }
   }
 
-  function handleClick(event) {
-    event.preventDefault();
-    adaptToUserRangeMod(event.target.id);
-  }
-
+  // TODO: investigate react no-op error
   function handleClickOutside() {
     dispatch({ type: 'closeDrop' });
   }
 
-  const numArray = Array.from({ length: dropEntries }, (v, k) => k);
+  const displayValues = dropValues.reduce((list, val, i) => {
+    return i % 10 === 0 ? [...list, val] : list;
+  }, []);
+  // const numArray = Array.from({ length: displayValues.length }, (v, k) => k);
 
   return (
     <Drop
       align={{ top: 'bottom', left: 'left' }}
       onClickOutside={handleClickOutside}
       stretch={false}
-      target={textInputRef.current}
+      width="100vw"
+      target={inputRef.current}
       elevation="small"
+      pad="20px"
+      onWheel={handleWheel}
     >
-      <Box
-        align="center"
-        justify="center"
-        onClick={handleClick}
-        cursor="pointer"
-        id="inc"
-        pad={{ vertical: '0.4rem' }}
-      >
-        <CaretUp pointerEvents="none" color="plain" size="small" />
-      </Box>
-      <Stack id="rangeSelectContainer" onWheel={handleScroll}>
-        <Box direction="column">
-          {numArray.map(index => (
-            <Box key={index} pad={{ horizontal: '1rem', vertical: '0.3rem' }}>
+      <Stack id="rangeSelectContainer">
+        <Box
+          direction="row"
+          border={{ side: 'bottom', size: '3px', color: 'neutral-1' }}
+          justify="between"
+        >
+          {displayValues.map(value => (
+            <Box key={value}>
               <Text
                 style={{
                   fontFamily: 'monospace',
@@ -96,17 +85,18 @@ export default function YearSelectDrop({ textInputRef }) {
                   msUserSelect: 'none',
                   MozUserSelect: 'none'
                 }}
+                margin="5px 10px"
               >
-                {dropValues[index]}
+                {value}
               </Text>
             </Box>
           ))}
         </Box>
         <RangeSelector
           id="rangeSelector"
-          direction="vertical"
+          direction="horizontal"
           min={0}
-          max={dropEntries - 1}
+          max={dropValues.length - 1}
           invert={false}
           size="medium"
           round="xxsmall"
@@ -114,16 +104,6 @@ export default function YearSelectDrop({ textInputRef }) {
           onChange={handleChange}
         />
       </Stack>
-      <Box
-        align="center"
-        justify="center"
-        onClick={handleClick}
-        cursor="pointer"
-        id="dec"
-        pad={{ vertical: '0.4rem' }}
-      >
-        <CaretDown pointerEvents="none" color="plain" size="small" />
-      </Box>
     </Drop>
   );
 }

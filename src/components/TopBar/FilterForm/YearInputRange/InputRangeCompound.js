@@ -5,18 +5,18 @@ import YearSelectDrop from './YearSelectDrop';
 import YearHotInput from './YearHotInput';
 
 export default function InputRangeCompound({ onChange }) {
-  const { yearDropOpen, selectedYears } = useContext(StateContext);
+  const { yearDropOpen, inputValue } = useContext(StateContext);
 
   const firstRender = useRef(onChange);
-  const inputEl = useRef();
+  const inputRef = useRef();
 
   useEffect(() => {
-    firstRender.current({ target: { value: selectedYears } });
-  }, [selectedYears]);
+    firstRender.current({ target: { value: inputValue } });
+  }, [inputValue]);
   return (
     <>
-      <YearHotInput ref={inputEl} />
-      {yearDropOpen && <YearSelectDrop textInputRef={inputEl} />}
+      <YearHotInput ref={inputRef} />
+      {yearDropOpen && <YearSelectDrop inputRef={inputRef} />}
     </>
   );
 }

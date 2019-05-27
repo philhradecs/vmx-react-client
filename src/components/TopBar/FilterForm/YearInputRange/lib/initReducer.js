@@ -1,46 +1,59 @@
-function initReducer(numRange, maxSpan, serializer, parser) {
+function initReducer(numRange, serializer, parser) {
   function readYearsByIndexRange(dropValues, [start, end]) {
     return dropValues.slice(start, end + 1);
   }
 
   function createDropValuesArray(selectedYears = [], dropValues = []) {
-    if (selectedYears.length < 1) {
-      return [];
-    }
-    if (dropValues.length > 1) {
-      if (selectedYears.every(year => dropValues.includes(year))) {
-        return dropValues;
-      }
-    }
+    // if (selectedYears.length < 1) {
+    //   return [];
+    // }
+    // if (dropValues.length > 1) {
+    //   if (selectedYears.every(year => dropValues.includes(year))) {
+    //     return dropValues;
+    //   }
+    // }
 
-    const centralValue =
-      selectedYears.length > 1
-        ? Math.ceil((selectedYears[0] + selectedYears[1]) / 2)
-        : selectedYears[0];
+    // const centralValue =
+    //   selectedYears.length > 1
+    //     ? Math.ceil((selectedYears[0] + selectedYears[1]) / 2)
+    //     : selectedYears[0];
 
-    let arr = Array.from(
-      { length: maxSpan },
-      (v, k) => centralValue + k - Math.ceil(maxSpan / 2)
+    // let arr = Array.from(
+    //   { length: maxSpan },
+    //   (v, k) => centralValue + k - Math.ceil(maxSpan / 2)
+    // );
+
+    // if (arr[0] < numRange[0]) {
+    //   arr = arr.map(num => num + numRange[0] - arr[0]);
+    // } else if (arr[arr.length - 1] > numRange[1]) {
+    //   arr = arr.map(num => num - (arr[arr.length - 1] - numRange[1]));
+    // }
+    // return arr.reverse();
+    return Array.from(
+      { length: Math.abs(numRange[0] - numRange[1]) + 1 },
+      (v, k) => numRange[0] + k
     );
-
-    if (arr[0] < numRange[0]) {
-      arr = arr.map(num => num + numRange[0] - arr[0]);
-    } else if (arr[arr.length - 1] > numRange[1]) {
-      arr = arr.map(num => num - (arr[arr.length - 1] - numRange[1]));
-    }
-    return arr.reverse();
   }
 
-  function init(initialYears = []) {
-    let selectedYears = initialYears;
-    if (typeof selectedYears === 'string') {
-      if (selectedYears.length === 0) {
-        selectedYears = [];
-      } else {
-        selectedYears = [selectedYears];
+  function randomValueInRange(count, range = [...numRange]) {
+    const [min, max] = range;
+    const getNumber = () => Math.floor(min + Math.random() * (max + 1 - min));
+    if (count && count > 1) {
+      const result = [];
+      for (let i = 0; i < count; i += 1) {
+        let newNum = getNumber();
+        while (result.includes(newNum)) {
+          newNum = getNumber();
+        }
+        result.push(newNum);
       }
+      return result.sort();
     }
-    selectedYears = selectedYears.map(val => +val);
+    return getNumber();
+  }
+
+  function init(initialInput) {
+    const selectedYears = parser(initialInput, numRange);
     const inputValue = serializer(selectedYears);
     const dropValues = createDropValuesArray(selectedYears);
     const dropSelection =
@@ -65,25 +78,23 @@ function initReducer(numRange, maxSpan, serializer, parser) {
     switch (action.type) {
       case 'parseInput': {
         const input = action.payload;
-        const parsedValues = parser(input, numRange, maxSpan);
+        const parsedValues = parser(input, numRange);
+
+        // parsed values differ from selectedYears
         if (
-          parsedValues &&
-          parsedValues.length > 0 &&
+          (parsedValues.length > 0 &&
+            parsedValues.length !== state.selectedYears.length) ||
           !parsedValues.every((val, i) => val === state.selectedYears[i])
         ) {
-          const newDropValues = createDropValuesArray(
-            parsedValues,
-            state.dropValues
-          );
           const newDropSelection = [
-            newDropValues.indexOf(parsedValues[parsedValues.length - 1]),
-            newDropValues.indexOf(parsedValues[0])
-          ].sort();
+            state.dropValues.indexOf(parsedValues[0]),
+            state.dropValues.indexOf(parsedValues[parsedValues.length - 1])
+          ];
 
           return {
+            ...state,
             inputValue: serializer(parsedValues),
             selectedYears: parsedValues,
-            dropValues: newDropValues,
             dropSelection: newDropSelection,
             yearDropOpen: true
           };
@@ -107,31 +118,23 @@ function initReducer(numRange, maxSpan, serializer, parser) {
           selectedYears: newSelectedYears
         };
       }
-      case 'incrementDropValues': {
-        const newSelectedYears = state.selectedYears.map(val => val + 1);
+      case 'shiftSelectedYears': {
+        const mod = action.payload;
+        const newYears = state.selectedYears.map(year => year + mod);
+        const newSelection = state.dropSelection.map(val => val + mod);
         return {
           ...state,
-          inputValue: serializer(newSelectedYears),
-          dropValues: state.dropValues.map(val => val + 1),
-          selectedYears: newSelectedYears
-        };
-      }
-      case 'decrementDropValues': {
-        const selectedYears = state.selectedYears.map(val => val - 1);
-        return {
-          ...state,
-          inputValue: serializer(selectedYears),
-          dropValues: state.dropValues.map(val => val - 1),
-          selectedYears
+          inputValue: serializer(newYears),
+          selectedYears: newYears,
+          dropSelection: newSelection
         };
       }
       case 'openDrop': {
         let newState = {};
 
-        if (state.dropValues.length === 0) {
-          const [min, max] = numRange;
-          const randomValue = Math.floor(min + Math.random() * (max + 1 - min));
-          newState = init([randomValue]);
+        if (state.selectedYears.length === 0) {
+          const randomInput = serializer(randomValueInRange(2));
+          newState = init(randomInput);
         }
 
         return {
@@ -145,7 +148,7 @@ function initReducer(numRange, maxSpan, serializer, parser) {
       case 'reset':
         return init(action.payload);
       default:
-        return state;
+        return { ...state };
     }
   }
 

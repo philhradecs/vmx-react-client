@@ -1,19 +1,10 @@
 import ContextProvider from './lib/ContextProvider';
 import InputRangeCompound from './InputRangeCompound';
 
-export default function YearInputRange({
-  placeholder,
-  name,
-  onChange,
-  ...props
-}) {
+export default function YearInputRange({ onChange, ...props }) {
   return (
     <ContextProvider {...props}>
-      <InputRangeCompound
-        placeholder={placeholder}
-        name={name}
-        onChange={onChange}
-      />
+      <InputRangeCompound onChange={onChange} />
     </ContextProvider>
   );
 }
