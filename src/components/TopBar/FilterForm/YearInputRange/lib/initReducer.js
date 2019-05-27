@@ -3,32 +3,7 @@ function initReducer(numRange, serializer, parser) {
     return dropValues.slice(start, end + 1);
   }
 
-  function createDropValuesArray(selectedYears = [], dropValues = []) {
-    // if (selectedYears.length < 1) {
-    //   return [];
-    // }
-    // if (dropValues.length > 1) {
-    //   if (selectedYears.every(year => dropValues.includes(year))) {
-    //     return dropValues;
-    //   }
-    // }
-
-    // const centralValue =
-    //   selectedYears.length > 1
-    //     ? Math.ceil((selectedYears[0] + selectedYears[1]) / 2)
-    //     : selectedYears[0];
-
-    // let arr = Array.from(
-    //   { length: maxSpan },
-    //   (v, k) => centralValue + k - Math.ceil(maxSpan / 2)
-    // );
-
-    // if (arr[0] < numRange[0]) {
-    //   arr = arr.map(num => num + numRange[0] - arr[0]);
-    // } else if (arr[arr.length - 1] > numRange[1]) {
-    //   arr = arr.map(num => num - (arr[arr.length - 1] - numRange[1]));
-    // }
-    // return arr.reverse();
+  function createDropValuesArray() {
     return Array.from(
       { length: Math.abs(numRange[0] - numRange[1]) + 1 },
       (v, k) => numRange[0] + k
