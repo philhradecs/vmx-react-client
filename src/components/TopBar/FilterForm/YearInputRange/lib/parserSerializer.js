@@ -9,7 +9,9 @@ function serializer(list = []) {
 }
 
 function parser(input = '', numRange) {
-  const hasValue = input.toString().match(/\d{4}/g);
+  const hasValue = input.toString().match(/\d+/g);
+
+  // const hasValue = input.toString().match(/\d{4}/g);
   if (!hasValue) {
     return [];
   }
