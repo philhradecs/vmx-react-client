@@ -1,10 +1,16 @@
-import { Box, Button, Form, FormField, TextInput } from 'grommet';
 import Router from 'next/router';
+import { Box, Button, TextInput } from 'grommet';
+import { FormSearch, FormTrash } from 'grommet-icons';
+
 import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
+import EnhancedForm from './EnhancedForm';
+import EnhancedFormField from './EnhancedFormField';
 import musicTypes from './InputAutosuggestion/data/discogsMusicTypes190510';
 import countries from './InputAutosuggestion/data/countryList';
 import { parser, serializer } from './YearInputRange/lib/parserSerializer';
+
+const dropValuesRange = [1900, 2020];
 
 const sortMusicType = (a, b) => {
   if (b.value === 'genre') {
@@ -13,41 +19,56 @@ const sortMusicType = (a, b) => {
   return a.label > b.label;
 };
 
-export default function FilterForm({ prevQuery }) {
+const sortCountries = () => {};
+
+export default function FilterForm({ prevQuery, small }) {
   function handleSubmit(event) {
     const cleanValues = JSON.parse(
       JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
     );
+    if (Object.keys(cleanValues).includes('years')) {
+      cleanValues.years = serializer(
+        parser(cleanValues.years, dropValuesRange)
+      );
+      cleanValues.years = cleanValues.years.replace(/\s/g, '');
+    }
     Router.push({ pathname: '/explorer', query: cleanValues });
   }
 
+  const initialValues = { ...prevQuery };
+
   return (
-    <Form onSubmit={handleSubmit} value={prevQuery}>
-      <Box direction="row" justify="between" align="center">
-        <FormField
+    <Box margin={{ horizontal: '1rem' }}>
+      <EnhancedForm
+        small={small}
+        formValues={initialValues}
+        onSubmit={handleSubmit}
+        direction="row"
+      >
+        <EnhancedFormField
           name="query"
           label="Keyword"
           component={TextInput}
           onClick={event => event.target.select()}
           placeholder="type here"
         />
-        <FormField
+        <EnhancedFormField
           name="artist"
           label="Artist"
           component={TextInput}
           onClick={event => event.target.select()}
           placeholder="type here"
         />
-        <FormField
+        <EnhancedFormField
           name="country"
           label="Country"
           component={InputAutosuggestion}
-          suggestionSort={() => {}}
+          suggestionSort={sortCountries}
           suggestionList={countries}
           suggestionUser
           placeholder="type here"
         />
-        <FormField
+        <EnhancedFormField
           name="musicType"
           label="Genre"
           component={InputAutosuggestion}
@@ -56,18 +77,25 @@ export default function FilterForm({ prevQuery }) {
           suggestionUser
           placeholder="type here"
         />
-        <FormField
+        <EnhancedFormField
           name="years"
           label="Time"
           component={YearInputRange}
-          dropValuesRange={[1900, 2019]}
-          dropEntries={10}
-          placeholder="1970 - 1979"
+          dropValuesRange={dropValuesRange}
+          placeholder="type here"
           parser={parser}
           serializer={serializer}
         />
-        <Button type="submit" label="Search" />
-      </Box>
-    </Form>
+        <Box
+          direction={small ? 'row' : 'column'}
+          pad={{ left: '1rem' }}
+          gap="0.5rem"
+          flex="grow"
+        >
+          <Button type="submit" label="Search" primary icon={<FormSearch />} />
+          <Button type="reset" label="Clear" icon={<FormTrash />} />
+        </Box>
+      </EnhancedForm>
+    </Box>
   );
 }
