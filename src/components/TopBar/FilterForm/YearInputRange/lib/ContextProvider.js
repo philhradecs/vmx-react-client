@@ -7,20 +7,18 @@ export default function ContextProvider({
   parser,
   serializer,
   dropValuesRange,
-  dropEntries,
   value,
   name,
   placeholder
 }) {
-  const { init, reducer } = initReducer(
-    dropValuesRange,
-    dropEntries,
-    serializer,
-    parser
-  );
+  const { init, reducer } = initReducer(dropValuesRange, serializer, parser);
   const [state, dispatch] = useReducer(reducer, value, init);
 
-  const config = { dropValuesRange, dropEntries, name, placeholder };
+  const config = {
+    dropValuesRange,
+    name,
+    placeholder
+  };
 
   return (
     <DispatchContext.Provider value={dispatch}>
