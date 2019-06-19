@@ -1,5 +1,4 @@
 export default [
-  // TODO: deal with inconsistent country tags (coming from discogs itself)
   { label: 'US', value: '' },
   { label: 'UK', value: '' },
   { label: 'Germany', value: '' },
