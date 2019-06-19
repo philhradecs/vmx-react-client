@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
+import useScroll from 'react-use/lib/useScroll';
 import { DispatchContext, StateContext } from './lib/contexts';
 
 export default function YearSelectDrop({ inputRef }) {
@@ -7,15 +8,16 @@ export default function YearSelectDrop({ inputRef }) {
   const state = useContext(StateContext);
   const { dropSelection, dropValues } = state;
 
-  function handleChange(newSelection) {
-    dispatch({ type: 'applyNewSelection', payload: newSelection });
+  function handleChange(selection) {
+    dispatch({ type: 'applyNewSelection', payload: selection });
   }
 
   function handleSelectionMod(mod) {
     const [minSelect, maxSelect] = [...dropSelection];
-    const nextSelection = [minSelect + mod, maxSelect - mod];
-    let [nextMin, nextMax] = nextSelection;
+    let nextMin = minSelect + mod;
+    let nextMax = maxSelect - mod;
 
+    // if bounds would 'flip'
     if (nextMin > nextMax) {
       return dispatch({
         type: 'applyNewSelection',
@@ -23,12 +25,14 @@ export default function YearSelectDrop({ inputRef }) {
       });
     }
 
+    // if one of the bounds would exceed the the value range leave it where it was
     if (nextMin >= 0 && !(nextMax < dropValues.length)) {
       nextMax = maxSelect;
     } else if (!(nextMin >= 0) && nextMax < dropValues.length) {
       nextMin = minSelect;
     }
 
+    // dispatch if both bounds are within value range
     if (nextMin >= 0 && nextMax < dropValues.length) {
       return dispatch({
         type: 'applyNewSelection',
@@ -36,7 +40,7 @@ export default function YearSelectDrop({ inputRef }) {
       });
     }
 
-    return undefined;
+    return null;
   }
 
   function handleWheel(event) {
@@ -49,11 +53,6 @@ export default function YearSelectDrop({ inputRef }) {
     }
   }
 
-  // TODO: investigate react no-op error
-  function handleClickOutside() {
-    dispatch({ type: 'closeDrop' });
-  }
-
   const displayValues = dropValues.reduce((list, val, i) => {
     return i % 10 === 0 ? [...list, val] : list;
   }, []);
@@ -61,19 +60,19 @@ export default function YearSelectDrop({ inputRef }) {
 
   return (
     <Drop
-      align={{ top: 'bottom', left: 'left' }}
-      onClickOutside={handleClickOutside}
-      stretch={false}
-      width="100vw"
       target={inputRef.current}
-      elevation="small"
-      pad="20px"
+      align={{ top: 'bottom', right: 'right' }}
+      onClickOutside={() => dispatch({ type: 'closeDrop' })}
+      width="100vw"
+      margin={{ top: '0.5rem' }}
+      elevation="none"
+      pad="1rem"
       onWheel={handleWheel}
     >
-      <Stack id="rangeSelectContainer">
+      <Stack id="rangeSelectContainer" fill>
         <Box
           direction="row"
-          border={{ side: 'bottom', size: '3px', color: 'neutral-1' }}
+          border={{ side: 'bottom', size: '2px', color: 'accent-2' }}
           justify="between"
         >
           {displayValues.map(value => (
@@ -85,7 +84,7 @@ export default function YearSelectDrop({ inputRef }) {
                   msUserSelect: 'none',
                   MozUserSelect: 'none'
                 }}
-                margin="5px 10px"
+                margin="0.3rem"
               >
                 {value}
               </Text>
