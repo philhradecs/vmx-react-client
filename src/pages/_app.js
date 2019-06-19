@@ -24,13 +24,13 @@ const theme = {
   }
 };
 
-const cache = new InMemoryCache();
 const client = new ApolloClient({
-  cache,
+  cache: new InMemoryCache({ freezeResults: true }),
   link: new HttpLink({
     fetch,
     uri: 'http://localhost:4000/graphql'
-  })
+  }),
+  assumeImmutableResults: true
 });
 
 class CustomApp extends App {
