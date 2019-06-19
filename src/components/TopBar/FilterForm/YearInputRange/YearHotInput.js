@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import { TextInput } from 'grommet';
+import { Keyboard, TextInput } from 'grommet';
 import { ConfigContext, DispatchContext, StateContext } from './lib/contexts';
 
-export default React.forwardRef(function YearHotInput(_, ref) {
+export default React.forwardRef(function YearHotInput(props, ref) {
   const dispatch = useContext(DispatchContext);
-  const { placeholder, name, dropValuesRange } = useContext(ConfigContext);
+  const { dropValuesRange } = useContext(ConfigContext);
   const state = useContext(StateContext);
-  const { selectedYears, inputValue } = state;
+  const { selectedYears } = state;
 
   function selectTextAndOpenDrop(event) {
     event.target.select();
@@ -34,17 +34,6 @@ export default React.forwardRef(function YearHotInput(_, ref) {
     }
   }
 
-  function handleKeyDown(event) {
-    if (event.keyCode === 38) {
-      event.preventDefault();
-      handleSelectedYearsMod(+1);
-    }
-    if (event.keyCode === 40) {
-      event.preventDefault();
-      handleSelectedYearsMod(-1);
-    }
-  }
-
   function handleWheel(event) {
     event.preventDefault();
 
@@ -56,19 +45,20 @@ export default React.forwardRef(function YearHotInput(_, ref) {
   }
 
   return (
-    <TextInput
-      ref={ref}
-      id="yearInput"
-      type="string"
-      value={inputValue}
-      onChange={handleChange}
-      onFocus={selectTextAndOpenDrop}
-      onKeyDown={handleKeyDown}
-      onWheel={handleWheel}
-      plain
-      onClick={selectTextAndOpenDrop}
-      name={name}
-      placeholder={placeholder}
-    />
+    <Keyboard
+      onUp={() => handleSelectedYearsMod(+1)}
+      onDown={() => handleSelectedYearsMod(-1)}
+      onEsc={() => dispatch({ type: 'closeDrop' })}
+    >
+      <TextInput
+        ref={ref}
+        type="string"
+        onChange={handleChange}
+        onFocus={selectTextAndOpenDrop}
+        onWheel={handleWheel}
+        onClick={selectTextAndOpenDrop}
+        {...props}
+      />
+    </Keyboard>
   );
 });
