@@ -5,7 +5,7 @@ export default function withChangeObserver(
   WrappedComponent,
   formValues,
   parser,
-  serializer
+  serializer,
   numRange
 ) {
   const sanitize = val => val.replace(/\s+/g, '') || '';
