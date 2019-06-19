@@ -35,10 +35,9 @@ function initReducer(numRange, serializer, parser) {
       selectedYears.length === 0
         ? []
         : [
-            dropValues.indexOf(selectedYears[selectedYears.length - 1]),
-            dropValues.indexOf(selectedYears[0])
-          ].sort();
-
+            dropValues.indexOf(selectedYears[0]),
+            dropValues.indexOf(selectedYears[selectedYears.length - 1])
+          ];
     const initialState = {
       inputValue,
       selectedYears,
@@ -109,7 +108,7 @@ function initReducer(numRange, serializer, parser) {
 
         if (state.selectedYears.length === 0) {
           const randomInput = serializer(randomValueInRange(2));
-          newState = init(randomInput);
+          newState = { ...init(randomInput), inputValue: '' };
         }
 
         return {
