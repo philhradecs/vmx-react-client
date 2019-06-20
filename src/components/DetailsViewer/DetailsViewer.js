@@ -1,9 +1,11 @@
 import { Box } from 'grommet';
-import MediaContainer from './MediaContainer';
-import NavigationContainer from './NavigationContainer';
+import MediaContainer from './MediaContainer/MediaContainer';
+import NavigationWrapper from './NavigationWrapper';
+import DataProvider from './DataProvider';
 
-export default function DetailsViewer({ data, detailsID }) {
-  const initialIndex = data.findIndex(entry => entry.id === detailsID);
+export default function DetailsViewer({ searchData, detailsID }) {
+  const initialIndex = searchData.findIndex(entry => entry.id === detailsID);
+  const maxIndex = searchData.length - 1;
 
   return (
     <Box
@@ -14,15 +16,17 @@ export default function DetailsViewer({ data, detailsID }) {
       round="18px"
       overflow="hidden"
     >
-      <NavigationContainer
+      <NavigationWrapper
         fill
         initialIndex={initialIndex}
-        data={data}
+        maxIndex={maxIndex}
         direction="row"
         navWidth="40px"
       >
-        <MediaContainer />
-      </NavigationContainer>
+        <DataProvider searchData={searchData}>
+          <MediaContainer />
+        </DataProvider>
+      </NavigationWrapper>
     </Box>
   );
 }
