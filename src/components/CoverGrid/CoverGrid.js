@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Grid, Layer, Keyboard } from 'grommet';
 
 import CoverGridTile from './CoverGridTile/CoverGridTile';
@@ -9,10 +9,10 @@ export default function CoverGrid({ data, columns }) {
   const [showDetailsViewer, setShowDetailsViewer] = useState(false);
   const [detailsID, setDetailsID] = useState(null);
 
-  function openDetailsViewerAtID(id) {
+  const openDetailsViewerAtID = useCallback(id => {
     setDetailsID(id);
     setShowDetailsViewer(true);
-  }
+  }, []);
 
   return (
     <>
@@ -31,7 +31,7 @@ export default function CoverGrid({ data, columns }) {
             position="center"
             onClickOutside={() => setShowDetailsViewer(false)}
           >
-            <DetailsViewer data={data.results} detailsID={detailsID} />
+            <DetailsViewer searchData={data.results} detailsID={detailsID} />
           </Layer>
         </Keyboard>
       )}

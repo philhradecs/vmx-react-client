@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Layer } from 'grommet';
 import useDebounce from 'react-use/lib/useDebounce';
 
@@ -52,9 +52,13 @@ export default function CoverGridTile({ data, openDetailsViewerAtID }) {
     [isHovering]
   );
 
-  function openDetailsViewer() {
+  const openDetailsViewer = useCallback(() => {
     openDetailsViewerAtID(data.id);
-  }
+  }, [data.id, openDetailsViewerAtID]);
+
+  const toggleBack = useCallback(() => {
+    setShowBack(!showBack);
+  }, [showBack]);
 
   return (
     <Box {...hoverProps} margin="0.8rem">
@@ -67,7 +71,7 @@ export default function CoverGridTile({ data, openDetailsViewerAtID }) {
           <ButtonOverlay
             key="front"
             tileIsHovering={isHovering}
-            handleFlip={() => setShowBack(!showBack)}
+            handleFlip={toggleBack}
             openDetailsViewer={openDetailsViewer}
           >
             <Tile isHovering={isHovering}>
@@ -78,7 +82,7 @@ export default function CoverGridTile({ data, openDetailsViewerAtID }) {
           <ButtonOverlay
             key="back"
             tileIsHovering={isHovering}
-            handleFlip={() => setShowBack(!showBack)}
+            handleFlip={toggleBack}
             openDetailsViewer={openDetailsViewer}
           >
             <Tile isHovering={isHovering}>
