@@ -9,7 +9,7 @@ export default function NavigationPanel({
   ...props
 }) {
   return (
-    <Box {...props} justify="center" align="center">
+    <Box {...props} justify="center" align="center" pad="0.5rem">
       <IconWrapper
         onClick={handleClick}
         highlightColor="accent-4"
