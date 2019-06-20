@@ -37,7 +37,7 @@ export default function MediaContainer({
         <Box gridArea="imageViewer">
           <ImageViewer
             initialImage={searchData.image.full}
-            images={detailsData ? detailsData.images : []}
+            images={detailsData ? detailsData.images : null}
             loading={loading}
             error={error}
           />
