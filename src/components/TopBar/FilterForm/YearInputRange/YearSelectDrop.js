@@ -62,7 +62,6 @@ export default function YearSelectDrop({ inputRef }) {
   const displayValues = dropValues.reduce((list, val, i) => {
     return i % 10 === 0 ? [...list, val] : list;
   }, []);
-  // const numArray = Array.from({ length: displayValues.length }, (v, k) => k);
 
   return (
     <Drop
