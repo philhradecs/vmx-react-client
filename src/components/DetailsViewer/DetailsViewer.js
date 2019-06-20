@@ -10,7 +10,7 @@ export default function DetailsViewer({ searchData, detailsID }) {
   return (
     <Box
       width="1050px"
-      height="550px"
+      height="600px"
       justify="center"
       align="center"
       round="18px"
