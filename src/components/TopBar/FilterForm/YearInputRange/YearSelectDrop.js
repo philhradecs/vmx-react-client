@@ -1,6 +1,5 @@
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useCallback } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
-import useScroll from 'react-use/lib/useScroll';
 import { DispatchContext, StateContext } from './lib/contexts';
 
 export default function YearSelectDrop({ inputRef }) {
@@ -8,9 +7,16 @@ export default function YearSelectDrop({ inputRef }) {
   const state = useContext(StateContext);
   const { dropSelection, dropValues } = state;
 
-  function handleChange(selection) {
-    dispatch({ type: 'applyNewSelection', payload: selection });
-  }
+  const handleChange = useCallback(
+    selection => {
+      dispatch({ type: 'applyNewSelection', payload: selection });
+    },
+    [dispatch]
+  );
+
+  const closeDrop = useCallback(() => {
+    dispatch({ type: 'closeDrop' });
+  }, [dispatch]);
 
   function handleSelectionMod(mod) {
     const [minSelect, maxSelect] = [...dropSelection];
@@ -62,7 +68,7 @@ export default function YearSelectDrop({ inputRef }) {
     <Drop
       target={inputRef.current}
       align={{ top: 'bottom', right: 'right' }}
-      onClickOutside={() => dispatch({ type: 'closeDrop' })}
+      onClickOutside={closeDrop}
       width="100vw"
       margin={{ top: '0.5rem' }}
       elevation="none"
