@@ -9,13 +9,12 @@ export default function NavigationPanel({
   ...props
 }) {
   return (
-    <Box {...props} justify="center" align="center" pad="0.5rem">
+    <Box {...props} justify="center" align="center">
       <IconWrapper
         onClick={handleClick}
         highlightColor="accent-4"
-        hoverIndicator="light-1"
-        fill
         disabled={disabled}
+        iconPad={{ vertical: '2rem' }}
       >
         {icon}
       </IconWrapper>
