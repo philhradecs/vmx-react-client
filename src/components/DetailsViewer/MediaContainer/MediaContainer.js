@@ -1,16 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Box, Grid, Tabs, Tab, Text } from 'grommet';
 import { Disc, Group } from 'grommet-icons';
 
 import ImageViewer from './ImageViewer';
 
-export default function MediaContainer({
-  searchData,
-  detailsData,
-  loading,
-  error
-}) {
+export default function MediaContainer({ searchData, activeIndex, ...props }) {
+  const activeData = searchData[activeIndex];
+
   return (
-    <Box pad="1rem" fill>
+    <Box {...props}>
       <Grid
         fill
         gap="medium"
@@ -32,26 +30,21 @@ export default function MediaContainer({
           }
         ]}
         rows={['auto', 'auto', 'auto']}
-        columns={['1/2', '1/2']}
+        columns={['2/4', '2/4']}
       >
         <Box gridArea="imageViewer">
-          <ImageViewer
-            initialImage={searchData.image.full}
-            images={detailsData ? detailsData.images : null}
-            loading={loading}
-            error={error}
-          />
+          <ImageViewer activeData={activeData} />
         </Box>
         <Box gridArea="detailsPanel">
           <Tabs>
             <Tab title="Release">
               <Box>
-                {Object.keys(searchData).map(key => {
+                {Object.keys(activeData).map(key => {
                   return key === 'image' ? null : (
                     <Box key={key}>
                       <span>
                         <Text weight="bold">{key}: </Text>
-                        <Text>{JSON.stringify(searchData[key])}</Text>
+                        <Text>{JSON.stringify(activeData[key])}</Text>
                       </span>
                     </Box>
                   );
@@ -68,6 +61,7 @@ export default function MediaContainer({
           background="neutral-3"
           justify="center"
           align="center"
+          fill
         >
           socialLinks
         </Box>
