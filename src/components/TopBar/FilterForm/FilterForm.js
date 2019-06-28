@@ -1,13 +1,15 @@
 import Router from 'next/router';
 import { Box, Button, TextInput } from 'grommet';
 import { FormSearch, FormTrash } from 'grommet-icons';
+import { useCallback } from 'react';
 
 import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
 import EnhancedForm from './EnhancedForm';
 import EnhancedFormField from './EnhancedFormField';
-import musicTypes from './InputAutosuggestion/data/discogsMusicTypes190510';
-import countries from './InputAutosuggestion/data/countryList';
+
+import musicTypes from '../../../data/discogsMusicTypes190510';
+import countries from '../../../data/countryList';
 import { parser, serializer } from './YearInputRange/lib/parserSerializer';
 
 const dropValuesRange = [1900, 2020];
@@ -21,21 +23,25 @@ const sortMusicType = (a, b) => {
 
 const sortCountries = () => {};
 
-export default function FilterForm({ prevQuery, small }) {
-  function handleSubmit(event) {
-    const cleanValues = JSON.parse(
-      JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
-    );
-    if (Object.keys(cleanValues).includes('years')) {
-      cleanValues.years = serializer(
-        parser(cleanValues.years, dropValuesRange)
-      );
-      cleanValues.years = cleanValues.years.replace(/\s/g, '');
-    }
-    Router.push({ pathname: '/explorer', query: cleanValues });
+function handleSubmit(event) {
+  event.preventDefault();
+  const cleanValues = JSON.parse(
+    JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
+  );
+  if (Object.keys(cleanValues).includes('years')) {
+    cleanValues.years = serializer(parser(cleanValues.years, dropValuesRange));
+    cleanValues.years = cleanValues.years.replace(/\s/g, '');
   }
+  // FIXME: Router.push does not route on index page
+  Router.push({ pathname: '/explorer', query: cleanValues });
+}
 
+export default function FilterForm({ prevQuery, small }) {
   const initialValues = { ...prevQuery };
+
+  const selectText = useCallback(event => {
+    event.target.select();
+  }, []);
 
   return (
     <Box margin={{ horizontal: '1rem' }}>
@@ -49,14 +55,14 @@ export default function FilterForm({ prevQuery, small }) {
           name="query"
           label="Keyword"
           component={TextInput}
-          onClick={event => event.target.select()}
+          onClick={selectText}
           placeholder="type here"
         />
         <EnhancedFormField
           name="artist"
           label="Artist"
           component={TextInput}
-          onClick={event => event.target.select()}
+          onClick={selectText}
           placeholder="type here"
         />
         <EnhancedFormField
@@ -65,7 +71,7 @@ export default function FilterForm({ prevQuery, small }) {
           component={InputAutosuggestion}
           suggestionSort={sortCountries}
           suggestionList={countries}
-          suggestionUser
+          // suggestionUser
           placeholder="type here"
         />
         <EnhancedFormField
@@ -74,7 +80,7 @@ export default function FilterForm({ prevQuery, small }) {
           component={InputAutosuggestion}
           suggestionSort={sortMusicType}
           suggestionList={musicTypes}
-          suggestionUser
+          // suggestionUser
           placeholder="type here"
         />
         <EnhancedFormField
