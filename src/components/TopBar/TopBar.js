@@ -1,23 +1,10 @@
-import { useState } from 'react';
-import { Box, Collapsible } from 'grommet';
-import CollapsibleControl from './CollapsibleControl/CollapsibleControl';
-
+import CollapsibleWrapper from './CollapsibleWrapper/CollapsibleWrapper';
 import ControlBox from './ControlBox/ControlBox';
 
-function TopBar(props) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+export default function TopBar({ prevQuery, small }) {
   return (
-    <Box>
-      <Collapsible open={!isCollapsed}>
-        <ControlBox isCollapsed={isCollapsed} {...props} />
-      </Collapsible>
-      <CollapsibleControl
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-      />
-    </Box>
+    <CollapsibleWrapper>
+      <ControlBox prevQuery={prevQuery} small={small} />
+    </CollapsibleWrapper>
   );
 }
-
-export default TopBar;
