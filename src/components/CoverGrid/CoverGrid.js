@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
-import { Grid, Layer, Keyboard } from 'grommet';
+import { Grid } from 'grommet';
 
 import CoverGridTile from './CoverGridTile/CoverGridTile';
-import DetailsViewer from '../DetailsViewer/DetailsViewer';
+import DetailsViewerLayer from '../DetailsViewer/DetailsViewerLayer';
 
 export default function CoverGrid({ data, columns }) {
   const { results } = data;
@@ -16,24 +16,26 @@ export default function CoverGrid({ data, columns }) {
 
   return (
     <>
-      <Grid columns={{ count: columns, size: 'auto' }}>
-        {results.map(release => (
-          <CoverGridTile
-            key={release.id}
-            data={release}
-            openDetailsViewerAtID={openDetailsViewerAtID}
-          />
-        ))}
+      <Grid columns={{ count: columns, size: 'auto' }} gap="medium">
+        {results.map(release => {
+          const { id } = release;
+          const openDetailsViewer = () => openDetailsViewerAtID(id);
+
+          return (
+            <CoverGridTile
+              key={id}
+              data={release}
+              openDetailsViewer={openDetailsViewer}
+            />
+          );
+        })}
       </Grid>
       {showDetailsViewer && (
-        <Keyboard onEsc={() => setShowDetailsViewer(false)} target="document">
-          <Layer
-            position="center"
-            onClickOutside={() => setShowDetailsViewer(false)}
-          >
-            <DetailsViewer searchData={data.results} detailsID={detailsID} />
-          </Layer>
-        </Keyboard>
+        <DetailsViewerLayer
+          searchData={data.results}
+          detailsID={detailsID}
+          close={() => setShowDetailsViewer(false)}
+        />
       )}
     </>
   );
