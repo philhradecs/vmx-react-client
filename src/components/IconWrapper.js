@@ -8,6 +8,7 @@ export default function IconWrapper({
   onClick,
   fill,
   disabled,
+  iconPad,
   ...props
 }) {
   const [isHovering, hoverProps] = useHover({
@@ -15,24 +16,45 @@ export default function IconWrapper({
     mouseLeaveDelayMS: 0
   });
 
+  const { selected } = props;
+
+  const [selectable, setSelectable] = useState(
+    Object.prototype.hasOwnProperty.call(props, 'selected')
+  );
+  const [isSelected, setIsSelected] = useState(selected);
+
+  useEffect(
+    () => {
+      setIsSelected(selected);
+    },
+    [selected]
+  );
+
+  function handleClick(event) {
+    if (selectable) {
+      setIsSelected(true);
+    }
+    onClick(event);
+  }
+
   let color = {};
-  if (!disabled && highlightColor && isHovering) {
+  if (!disabled && highlightColor && (selectable ? isSelected : isHovering)) {
     color = { color: highlightColor };
   }
 
   const colouredIcon = React.cloneElement(children, color);
 
+  // FIXME: fill breaks parent layout
   return (
     <Button
       fill={fill}
-      onClick={onClick}
-      background={isHovering ? 'light-1' : ''}
+      onClick={handleClick}
       plain
       disabled={disabled}
       {...hoverProps}
       {...props}
     >
-      <Box align="center" justify="center">
+      <Box align="center" justify="center" iconPad={iconPad} pad={iconPad}>
         {colouredIcon}
       </Box>
     </Button>
