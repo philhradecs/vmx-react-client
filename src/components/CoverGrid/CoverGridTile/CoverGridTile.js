@@ -1,41 +1,45 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Box, Layer } from 'grommet';
+import { useState, useEffect } from 'react';
+import { Box, Layer, Anchor } from 'grommet';
 import useDebounce from 'react-use/lib/useDebounce';
+import useToggle from 'react-use/lib/useToggle';
 
 import useHover from 'react-use-hover';
 import Ratio from 'react-ratio';
 import ReactCardFlip from 'react-card-flip';
 import Front from './Front';
 import Back from './Back';
-import BottomContextBar from '../../BottomContextBar/BottomContextBar';
+// import BottomContextBar from '../../BottomContextBar/BottomContextBar';
 import ButtonOverlay from './ButtonOverlay';
 
 function Tile({ children, isHovering }) {
+  // const transition = {
+  //   transform: isHovering
+  //     ? ' rotate(0deg) rotateX(0deg) rotateY(0deg) rotateZ(0deg)'
+  //     : '',
+  //   tranformOrigin: 'transform-origin: 50% 50%',
+  //   transition: 'transform 200ms'
+  // };
+
   return (
     <Box
       fill
-      border={
-        isHovering
-          ? {
-              color: 'dark-1',
-              size: '1px',
-              style: 'solid',
-              side: 'all'
-            }
-          : {}
-      }
-      round="5px"
+      border={{
+        color: isHovering ? 'dark-1' : 'dark-6'
+        // size: '1px'
+      }}
       overflow="hidden"
+      round="4px"
       elevation={isHovering ? 'medium' : 'xsmall'}
+      // style={transition}
     >
       {children}
     </Box>
   );
 }
 
-export default function CoverGridTile({ data, openDetailsViewerAtID }) {
-  const [showBack, setShowBack] = useState(false);
-  const [loadBack, setLoadBack] = useState(false);
+export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
+  const [showBack, toggleBack] = useToggle(false);
+  const [preloadBack, setPreloadBack] = useState(false);
   const [isHovering, hoverProps] = useHover({
     mouseEnterDelayMS: 10,
     mouseLeaveDelayMS: 0
@@ -44,55 +48,54 @@ export default function CoverGridTile({ data, openDetailsViewerAtID }) {
 
   useDebounce(
     () => {
-      if (isHovering) {
-        setLoadBack(true);
+      if (isHovering && !preloadBack) {
+        setPreloadBack(true);
       }
     },
-    500,
+    400,
     [isHovering]
   );
 
-  const openDetailsViewer = useCallback(() => {
-    openDetailsViewerAtID(data.id);
-  }, [data.id, openDetailsViewerAtID]);
-
-  const toggleBack = useCallback(() => {
-    setShowBack(!showBack);
-  }, [showBack]);
+  function handleToggleBack(event) {
+    event.stopPropagation();
+    toggleBack();
+  }
 
   return (
-    <Box {...hoverProps} margin="0.8rem">
+    <Box onClick={openDetailsViewer} {...hoverProps} {...props}>
       <Ratio>
         <ReactCardFlip
           isFlipped={showBack}
-          flipDirection="horizontal"
-          containerStyle={{ height: '100%' }}
+          containerStyle={{ width: '100%', height: '100%' }}
         >
+          {/* <FrontSide style={{ padding: '0', boxShadow: 'none' }}> */}
           <ButtonOverlay
             key="front"
             tileIsHovering={isHovering}
-            handleFlip={toggleBack}
+            handleFlip={handleToggleBack}
             openDetailsViewer={openDetailsViewer}
           >
             <Tile isHovering={isHovering}>
               <Front image={image} />
             </Tile>
           </ButtonOverlay>
-
           <ButtonOverlay
             key="back"
             tileIsHovering={isHovering}
-            handleFlip={toggleBack}
+            handleFlip={handleToggleBack}
             openDetailsViewer={openDetailsViewer}
           >
             <Tile isHovering={isHovering}>
-              <Back releaseID={id} loadBack={loadBack} />
+              <Back releaseID={id} loadBack={showBack || preloadBack} />
             </Tile>
           </ButtonOverlay>
         </ReactCardFlip>
       </Ratio>
+    </Box>
+  );
+}
 
-      {/* <Layer
+/* <Layer
         animate={false}
         full="horizontal"
         modal={false}
@@ -117,7 +120,4 @@ export default function CoverGridTile({ data, openDetailsViewerAtID }) {
         >
           <BottomContextBar contextData={data} />
         </Box>
-      </Layer> */}
-    </Box>
-  );
-}
+      </Layer> */
