@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Box, Collapsible, Stack } from 'grommet';
-import { Expand, Revert } from 'grommet-icons';
+import { Expand, Revert, Iteration } from 'grommet-icons';
 import IconWrapper from '../../IconWrapper';
 
 export default function ButtonOverlay({
@@ -38,6 +38,14 @@ export default function ButtonOverlay({
 
           <IconWrapper onClick={handleFlip} highlightColor="accent-4">
             <Revert
+              color="neutral-3"
+              // style={blend}
+              size="1.2rem"
+            />
+          </IconWrapper>
+
+          <IconWrapper onClick={openDetailsViewer} highlightColor="accent-4">
+            <Iteration
               color="neutral-3"
               // style={blend}
               size="1.2rem"
