@@ -43,19 +43,21 @@ export default function NavigationWrapper({
     <Keyboard onLeft={decreaseIndex} onRight={increaseIndex} target="document">
       <Box {...props}>
         <NavigationPanel
-          icon={<Previous />}
+          icon={<Previous size="4rem" color="accent-1" />}
           handleClick={decreaseIndex}
           disabled={limitReached.min}
           width={navWidth}
           flex={false}
+          background="transparent"
         />
         {React.cloneElement(children, { activeIndex })}
         <NavigationPanel
-          icon={<Next />}
+          icon={<Next size="4rem" color="accent-1" />}
           handleClick={increaseIndex}
           disabled={limitReached.max}
           width={navWidth}
           flex={false}
+          background="transparent"
         />
       </Box>
     </Keyboard>
