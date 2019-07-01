@@ -5,7 +5,7 @@ import useHover from 'react-use-hover';
 export default function IconWrapper({
   children,
   highlightColor,
-  onClick,
+  onClick = () => {},
   fill,
   disabled,
   iconPad,
