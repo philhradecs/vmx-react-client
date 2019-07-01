@@ -5,7 +5,7 @@ import { Close } from 'grommet-icons';
 import ImageViewer from './ImageViewer';
 import IconWrapper from '../../IconWrapper';
 import DataContext from '../DataProvider/context';
-import DetailsTabsPanel from './DetailsTabsPanesl';
+import DetailsTabsPanel from './DetailsTabsPanel';
 
 export default function MediaContainer({ close, ...props }) {
   const { detailsData, activeData } = useContext(DataContext);
