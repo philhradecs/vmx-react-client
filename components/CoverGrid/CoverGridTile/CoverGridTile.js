@@ -15,14 +15,21 @@ import DataOverlay from './DataOverlay';
 import DetailsDataProvider from './DetailsDataProvider/DetailsDataProvider';
 import { GET_RELEASE_DETAILS } from '../../../apollo/queries';
 
-function Tile({ children, isHovering, ...props }) {
+function TileTransition({ children, isHovering }) {
   const transition = {
     transform: isHovering ? 'scale(0.8)' : '',
     transformOrigin: '5% 5%',
     transition: 'all 200ms ease',
-    transitionDelay: isHovering ? '0' : '20ms'
+    transitionDelay: isHovering ? '0' : '30'
   };
+  return (
+    <Box fill style={transition}>
+      {children}
+    </Box>
+  );
+}
 
+function Tile({ children, isHovering, ...props }) {
   return (
     <Box
       fill
@@ -32,8 +39,11 @@ function Tile({ children, isHovering, ...props }) {
       }}
       overflow="hidden"
       round="4px"
-      elevation={isHovering ? 'large' : 'xsmall'}
-      style={transition}
+      elevation={isHovering ? 'large' : 'small'}
+      style={{
+        transition: 'all 200ms ease',
+        transitionDelay: isHovering ? '0' : '30'
+      }}
       {...props}
     >
       {children}
@@ -55,7 +65,7 @@ const AnimatedCombinedOverlay = ({
         animation={{
           type: tileIsHovering ? 'fadeIn' : 'fadeOut',
           duration: 150,
-          delay: tileIsHovering ? 20 : 0
+          delay: tileIsHovering ? 30 : 0
         }}
       >
         <ButtonOverlay buttonMap={buttonMap} />
@@ -72,7 +82,7 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
     mouseEnterDelayMS: 10,
     mouseLeaveDelayMS: 0
   });
-  const { image, id } = data;
+  const { image } = data;
 
   useDebounce(
     () => {
@@ -99,7 +109,7 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
   const buttonMap = [
     { icon: <Expand />, action: openDetailsViewer },
     { icon: <Revert />, action: flipTile },
-    { icon: <Iteration />, action: () => {} }
+    { icon: <Iteration />, action: () => {}, props: { disabled: true } }
   ];
 
   const apollo = {
@@ -120,23 +130,25 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
           tileIsHovering={isHovering}
           data={data}
         >
-          <ReactCardFlip isFlipped={showBack} containerStyle={containerStyle}>
-            <Box fill key="front">
-              <Tile isHovering={isHovering}>
-                <Front image={image} />
-              </Tile>
-            </Box>
-            <Box fill key="back">
-              <Tile isHovering={isHovering} back>
-                <DetailsDataProvider
-                  apollo={apollo}
-                  load={showBack || preloadBack}
-                >
-                  <Back />
-                </DetailsDataProvider>
-              </Tile>
-            </Box>
-          </ReactCardFlip>
+          <TileTransition isHovering={isHovering}>
+            <ReactCardFlip isFlipped={showBack} containerStyle={containerStyle}>
+              <Box fill key="front">
+                <Tile isHovering={isHovering}>
+                  <Front image={image} />
+                </Tile>
+              </Box>
+              <Box fill key="back">
+                <Tile isHovering={isHovering}>
+                  <DetailsDataProvider
+                    apollo={apollo}
+                    load={showBack || preloadBack}
+                  >
+                    <Back />
+                  </DetailsDataProvider>
+                </Tile>
+              </Box>
+            </ReactCardFlip>
+          </TileTransition>
         </AnimatedCombinedOverlay>
       </Ratio>
     </Box>
