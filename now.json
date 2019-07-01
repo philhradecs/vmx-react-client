@@ -2,5 +2,8 @@
   "name": "vmx-client",
   "version": 2,
   "alias": "vmx",
-  "builds": [{ "src": "package.json", "use": "@now/next" }]
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
+  "env": {
+    "ENGINE_API_KEY": "service:baumzeit-vmx:EJOZB5Vuj31BfpLKBfsEKQ"
+  }
 }

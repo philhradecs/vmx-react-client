@@ -1,7 +1,7 @@
 module.exports = {
   service: {
-    endpoint: {
-      url: 'http://localhost:4000'
+    client: {
+      service: 'baumzeit-vmx'
     }
   }
 };
