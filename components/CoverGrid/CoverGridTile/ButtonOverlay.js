@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Collapsible, Stack } from 'grommet';
+import { Box } from 'grommet';
 
 import IconWrapper from '../../IconWrapper';
 
@@ -12,7 +12,7 @@ export default function ButtonOverlay({
 }) {
   const highlightColor = 'accent-4';
   const color = 'brand';
-  const size = '1.2rem';
+  const size = '1.3rem';
 
   return (
     <Box fill>
