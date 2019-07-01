@@ -1,10 +1,11 @@
 import { useContext } from 'react';
-import { Box, Grid, Tabs, Tab, Text } from 'grommet';
-import { Close, Disc, Group } from 'grommet-icons';
+import { Box, Grid, Text } from 'grommet';
+import { Close } from 'grommet-icons';
 
 import ImageViewer from './ImageViewer';
 import IconWrapper from '../../IconWrapper';
 import DataContext from '../DataProvider/context';
+import DetailsTabsPanel from './DetailsTabsPanesl';
 
 export default function MediaContainer({ close, ...props }) {
   const { detailsData, activeData } = useContext(DataContext);
@@ -45,7 +46,7 @@ export default function MediaContainer({ close, ...props }) {
         columns={['flex', 'flex', 'auto']}
       >
         <Box gridArea="imageViewer">
-          <ImageViewer activeData={activeData} detailsData={detailsData} />
+          <ImageViewer />
         </Box>
         <Box gridArea="title">
           <Text>{activeData.title}</Text>
@@ -56,25 +57,7 @@ export default function MediaContainer({ close, ...props }) {
           </IconWrapper>
         </Box>
         <Box gridArea="detailsPanel">
-          <Tabs>
-            <Tab title="Release">
-              <Box>
-                {Object.keys(activeData).map(key => {
-                  return key === 'image' ? null : (
-                    <Box key={key}>
-                      <span>
-                        <Text weight="bold">{key}: </Text>
-                        <Text>{JSON.stringify(activeData[key])}</Text>
-                      </span>
-                    </Box>
-                  );
-                })}
-              </Box>
-            </Tab>
-            <Tab title="Artist">
-              <Box pad="medium">Artist description</Box>
-            </Tab>
-          </Tabs>
+          <DetailsTabsPanel />
         </Box>
         <Box
           gridArea="socialLinks"
