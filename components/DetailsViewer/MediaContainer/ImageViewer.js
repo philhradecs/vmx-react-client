@@ -1,12 +1,14 @@
 import { Box } from 'grommet';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import ImageSelector from './ImageSelector';
 import LoadingImageSelector from './LoadingImageSelector';
 import MainImage from './MainImage';
+import DataContext from '../DataProvider/context';
 
-export default function ImageViewer({ activeData, detailsData }) {
+export default function ImageViewer(props) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { detailsData, activeData } = useContext(DataContext);
 
   useEffect(
     () => {
@@ -16,7 +18,7 @@ export default function ImageViewer({ activeData, detailsData }) {
   );
 
   return (
-    <Box fill gap="1rem">
+    <Box fill gap="1rem" {...props}>
       <MainImage
         imageSrc={
           detailsData && detailsData.images.length > 0
