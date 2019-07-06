@@ -70,7 +70,7 @@ export default function InputAutosuggestion({
       suggestions={matches}
       onSelect={handleSelect}
       onClick={handleFocusClick}
-      onFocus={handleFocusClick}
+      onFocusCapture={handleFocusClick}
       dropProps={{
         pad: { horizontal: '0.8rem', vertical: '0.5rem' },
         elevation: 'small'
