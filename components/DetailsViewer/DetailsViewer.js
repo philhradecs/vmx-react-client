@@ -1,11 +1,33 @@
+import React from 'react';
 import { Box } from 'grommet';
+import { useTimeout } from 'react-use';
+
 import MediaContainer from './MediaContainer/MediaContainer';
 import NavigationWrapper from './NavigationWrapper';
-import DataProvider from './DataProvider/DataProvider';
+import ApolloDataProvider from '../ApolloDataProvider/ApolloDataProvider';
+import { GET_RELEASE_DETAILS } from '../../apollo/queries';
 
 export default function DetailsViewer({ searchData, detailsID, close }) {
   const initialIndex = searchData.findIndex(entry => entry.id === detailsID);
   const maxIndex = searchData.length - 1;
+
+  const NavigationConsumer = ({ children, activeIndex }) => {
+    const delay = useTimeout(250);
+    const activeData = searchData[activeIndex];
+    return (
+      <ApolloDataProvider
+        apolloOptions={{
+          variables: { id: activeData.id },
+          query: GET_RELEASE_DETAILS
+        }}
+        typeName="releaseDetails"
+        load={delay}
+        additionalContext={{ activeData }}
+      >
+        {children}
+      </ApolloDataProvider>
+    );
+  };
 
   return (
     <Box
@@ -23,7 +45,7 @@ export default function DetailsViewer({ searchData, detailsID, close }) {
         navWidth="80px"
         gap="xsmall"
       >
-        <DataProvider searchData={searchData} queryDelay={250}>
+        <NavigationConsumer>
           <MediaContainer
             pad="1rem"
             background="white"
@@ -31,7 +53,7 @@ export default function DetailsViewer({ searchData, detailsID, close }) {
             round="10px"
             close={close}
           />
-        </DataProvider>
+        </NavigationConsumer>
       </NavigationWrapper>
     </Box>
   );
