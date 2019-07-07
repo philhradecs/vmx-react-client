@@ -2,11 +2,11 @@ import { Box, Tabs, Tab, Text } from 'grommet';
 import { useContext, useState } from 'react';
 import { Disc, Group } from 'grommet-icons';
 import IconWrapper from '../../IconWrapper';
-import DataContext from '../DataProvider/context';
+import ApolloDataContext from '../../ApolloDataProvider/context';
 
 export default function DetailsTabsPanel() {
   const [activeIndex, setActivIndex] = useState(0);
-  const { detailsData, activeData } = useContext(DataContext);
+  const { data: detailsData, activeData } = useContext(ApolloDataContext);
 
   const withWrapper = (icon, tabIndex) => (
     <IconWrapper selected={activeIndex === tabIndex} highlightColor="accent-4">

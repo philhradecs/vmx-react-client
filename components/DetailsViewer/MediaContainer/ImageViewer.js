@@ -4,11 +4,11 @@ import { useState, useEffect, useContext } from 'react';
 import ImageSelector from './ImageSelector';
 import LoadingImageSelector from './LoadingImageSelector';
 import MainImage from './MainImage';
-import DataContext from '../DataProvider/context';
+import ApolloDataContext from '../../ApolloDataProvider/context';
 
 export default function ImageViewer(props) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const { detailsData, activeData } = useContext(DataContext);
+  const { data: detailsData, activeData } = useContext(ApolloDataContext);
 
   useEffect(
     () => {
