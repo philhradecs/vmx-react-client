@@ -3,12 +3,13 @@ import { Box, Grid, Text } from 'grommet';
 import { Close } from 'grommet-icons';
 
 import ImageViewer from './ImageViewer';
-import IconWrapper from '../../IconWrapper';
-import DataContext from '../DataProvider/context';
+import IconWrapper from '../../IconWrapper'
 import DetailsTabsPanel from './DetailsTabsPanel';
 
+import ApolloDataContext from '../../ApolloDataProvider/context';
+
 export default function MediaContainer({ close, ...props }) {
-  const { detailsData, activeData } = useContext(DataContext);
+  const { activeData } = useContext(ApolloDataContext);
 
   return (
     <Box {...props}>
