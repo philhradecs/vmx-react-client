@@ -12,8 +12,9 @@ import Back from './Back';
 
 import ButtonOverlay from './ButtonOverlay';
 import DataOverlay from './DataOverlay';
-import DetailsDataProvider from './DetailsDataProvider/DetailsDataProvider';
+import ApolloDataProvider from '../../ApolloDataProvider/ApolloDataProvider';
 import { GET_RELEASE_DETAILS } from '../../../apollo/queries';
+import TileContentContainer from './TileContentContainer';
 
 function TileTransition({ children, isHovering }) {
   const transition = {
@@ -24,28 +25,6 @@ function TileTransition({ children, isHovering }) {
   };
   return (
     <Box fill style={transition}>
-      {children}
-    </Box>
-  );
-}
-
-function Tile({ children, isHovering, ...props }) {
-  return (
-    <Box
-      fill
-      border={{
-        color: isHovering ? 'dark-1' : 'dark-6',
-        size: '1px'
-      }}
-      overflow="hidden"
-      round="4px"
-      elevation={isHovering ? 'large' : 'small'}
-      style={{
-        transition: 'all 200ms ease',
-        transitionDelay: isHovering ? '0' : '30'
-      }}
-      {...props}
-    >
       {children}
     </Box>
   );
@@ -79,7 +58,7 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
   const [showBack, toggleBack] = useToggle(false);
   const [preloadBack, setPreloadBack] = useState(false);
   const [isHovering, hoverProps] = useHover({
-    mouseEnterDelayMS: 10,
+    mouseEnterDelayMS: 0,
     mouseLeaveDelayMS: 0
   });
   const { image } = data;
@@ -112,12 +91,9 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
     { icon: <Iteration />, action: () => {}, props: { disabled: true } }
   ];
 
-  const apollo = {
-    options: {
-      variables: { id: data.id },
-      query: GET_RELEASE_DETAILS
-    },
-    typeName: 'releaseDetails'
+  const apolloOptions = {
+    variables: { id: data.id },
+    query: GET_RELEASE_DETAILS
   };
 
   const containerStyle = { width: '100%', height: '100%' };
@@ -133,19 +109,20 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
           <TileTransition isHovering={isHovering}>
             <ReactCardFlip isFlipped={showBack} containerStyle={containerStyle}>
               <Box fill key="front">
-                <Tile isHovering={isHovering}>
+                <TileContentContainer isHovering={isHovering}>
                   <Front image={image} />
-                </Tile>
+                </TileContentContainer>
               </Box>
               <Box fill key="back">
-                <Tile isHovering={isHovering}>
-                  <DetailsDataProvider
-                    apollo={apollo}
+                <TileContentContainer isHovering={isHovering}>
+                  <ApolloDataProvider
+                    apolloOptions={apolloOptions}
+                    typeName="releaseDetails"
                     load={showBack || preloadBack}
                   >
                     <Back />
-                  </DetailsDataProvider>
-                </Tile>
+                  </ApolloDataProvider>
+                </TileContentContainer>
               </Box>
             </ReactCardFlip>
           </TileTransition>
