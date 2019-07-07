@@ -1,10 +1,10 @@
 import { Box, Text } from 'grommet';
 import { useContext } from 'react';
 import LoadingTile from './LoadingTile';
-import DetailsDataContext from './DetailsDataProvider/context';
+import ApolloDataContext from '../../ApolloDataProvider/context';
 
 export default function Back() {
-  const { data } = useContext(DetailsDataContext);
+  const { data } = useContext(ApolloDataContext);
 
   if (!data) return <LoadingTile />;
 
