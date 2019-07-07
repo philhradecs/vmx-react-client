@@ -6,6 +6,8 @@ import fetch from 'node-fetch';
 import { Grommet } from 'grommet';
 
 import { createGlobalStyle } from 'styled-components';
+import resolvers from '../apollo/resolvers';
+import typeDefs from '../apollo/typeDefs';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -24,7 +26,23 @@ const theme = {
   }
 };
 
-const cache = new InMemoryCache({ freezeResults: true });
+const cache = new InMemoryCache();
+
+cache.writeData({
+  data: {
+    activeQuery: {
+      query: '',
+      genre: '',
+      style: '',
+      country: '',
+      years: '',
+      artist: '',
+      page: 1,
+      per_page: 100,
+      __typename: 'SearchQuery'
+    }
+  }
+});
 
 // TODO: Monkey-patching in a fix for an open issue suggesting that
 // `readQuery` should return null or undefined if the query is not yet in the
@@ -37,14 +55,16 @@ cache.readQuery = (...args) => {
     return undefined;
   }
 };
+// 'https://vmx-server.baumzeit.now.sh/graphql'
 
 const client = new ApolloClient({
   cache,
   link: new HttpLink({
     fetch,
-    uri: 'https://vmx-server.baumzeit.now.sh/graphql'
+    uri: 'http://localhost:3000/graphql'
   }),
-  assumeImmutableResults: true
+  typeDefs,
+  resolvers
 });
 
 class CustomApp extends App {
