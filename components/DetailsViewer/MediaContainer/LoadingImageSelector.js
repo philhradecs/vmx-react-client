@@ -16,7 +16,7 @@ export default function LoadingImageSelector() {
       <PropagateLoader
         css={override}
         sizeUnit="px"
-        size={20}
+        size={15}
         color="#123abc"
         loading={loading}
       />
