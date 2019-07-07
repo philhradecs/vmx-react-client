@@ -33,13 +33,10 @@ function handleSubmit(event) {
     cleanValues.years = serializer(parser(cleanValues.years, dropValuesRange));
     cleanValues.years = cleanValues.years.replace(/\s/g, '');
   }
-  // FIXME: Router.push does not route on index page
   Router.push({ pathname: '/explorer', query: cleanValues });
 }
 
 export default function FilterForm({ prevQuery, small }) {
-  const initialValues = { ...prevQuery };
-
   const selectText = useCallback(event => {
     event.target.select();
   }, []);
@@ -48,7 +45,7 @@ export default function FilterForm({ prevQuery, small }) {
     <Box margin={{ horizontal: '1rem' }}>
       <EnhancedForm
         small={small}
-        formValues={initialValues}
+        formValues={prevQuery}
         onSubmit={handleSubmit}
         direction="row"
       >
