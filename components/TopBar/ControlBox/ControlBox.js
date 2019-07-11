@@ -6,7 +6,7 @@ import FilterForm from '../FilterForm/FilterForm';
 import ViewSettings from '../ViewSettings/ViewSettings';
 import IconWrapper from '../../IconWrapper';
 
-function ControlBox({ prevQuery, small }) {
+function ControlBox({ small }) {
   const [showSettings, setShowSettings] = useState(false);
   const controlBox = useRef(null);
 
@@ -25,7 +25,7 @@ function ControlBox({ prevQuery, small }) {
         </Anchor>
       </Box>
 
-      <FilterForm prevQuery={prevQuery} small={small} />
+      <FilterForm small={small} />
 
       <Box direction="row" gap="1rem">
         <IconWrapper

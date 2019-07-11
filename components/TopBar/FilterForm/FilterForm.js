@@ -36,19 +36,14 @@ function handleSubmit(event) {
   Router.push({ pathname: '/explorer', query: cleanValues });
 }
 
-export default function FilterForm({ prevQuery, small }) {
+export default function FilterForm({ small }) {
   const selectText = useCallback(event => {
     event.target.select();
   }, []);
 
   return (
     <Box margin={{ horizontal: '1rem' }}>
-      <EnhancedForm
-        small={small}
-        formValues={prevQuery}
-        onSubmit={handleSubmit}
-        direction="row"
-      >
+      <EnhancedForm small={small} onSubmit={handleSubmit} direction="row">
         <EnhancedFormField
           name="query"
           label="Keyword"
