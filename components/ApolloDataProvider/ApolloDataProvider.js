@@ -1,6 +1,18 @@
+import Router from 'next/router';
 import React from 'react';
 import { Query } from 'react-apollo';
 import DiscogsDataContext from './context';
+
+function formatQueryForForm(queryParam) {
+  const query = { ...queryParam };
+  const { genre, style } = query;
+  if (genre || style) {
+    query.musicType = query.genre || query.style;
+    delete query.genre;
+    delete query.style;
+  }
+  return query;
+}
 
 function ApolloDataProvider({
   children,
@@ -8,7 +20,7 @@ function ApolloDataProvider({
   typeName,
   load,
   additionalContext,
-  paginationSupport
+  loadingComponent
 }) {
   return (
     <Query
@@ -16,46 +28,37 @@ function ApolloDataProvider({
       fetchPolicy={load ? 'cache-first' : 'cache-only'}
       notifyOnNetworkStatusChange
     >
-      {({ data, fetchMore, loading, error, variables }) => {
+      {({ data, loading, error, variables }) => {
+        if (loadingComponent && loading) return loadingComponent;
+
         const fetchedData = data ? data[typeName] : null;
-        let fetchPage = { prev() {}, next() {} };
+        let hasMore = { next: false, prev: false };
+        let fetchMoreData = {};
 
-        if (paginationSupport && fetchedData) {
+        if (fetchedData && Object.keys(fetchedData).includes('pagination')) {
           const { page, pages } = fetchedData.pagination;
-          const hasMore = { next: page !== pages, prev: page !== 1 };
+          hasMore = { next: page !== pages, prev: page !== 1 };
 
-          const updateQuery = (prev, { fetchMoreResult }) => {
-            if (!fetchMoreResult) return prev;
+          const query = formatQueryForForm(variables); // unify 'style' and 'genre' query parameter
 
-            return {
-              ...prev,
-              [typeName]: {
-                ...prev[typeName],
-                pagination: {
-                  ...prev[typeName].pagination,
-                  page: fetchMoreResult[typeName].pagination.page
-                },
-                results: fetchMoreResult[typeName].results
-              }
-            };
-          };
-
-          fetchPage = {
-            prev() {
-              return hasMore.prev
-                ? fetchMore({
-                    variables: { ...variables, page: page - 1 },
-                    updateQuery
-                  })
-                : {};
+          fetchMoreData = {
+            prevPage() {
+              return Router.push({
+                pathname: '/explorer',
+                query: { ...query, page: page - 1 }
+              });
             },
-            next() {
-              return hasMore.next
-                ? fetchMore({
-                    variables: { ...variables, page: page + 1 },
-                    updateQuery
-                  })
-                : {};
+            nextPage() {
+              return Router.push({
+                pathname: '/explorer',
+                query: { ...query, page: page + 1 }
+              });
+            },
+            page(num) {
+              Router.push({
+                pathname: '/explorer',
+                query: { ...variables, page: num }
+              });
             }
           };
         }
@@ -64,10 +67,11 @@ function ApolloDataProvider({
           <DiscogsDataContext.Provider
             value={{
               data: fetchedData,
-              fetchPage,
               loading,
               error,
               variables,
+              hasMore,
+              fetchMoreData,
               ...additionalContext
             }}
           >
