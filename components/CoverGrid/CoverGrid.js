@@ -1,54 +1,55 @@
-import { useCallback, useState, useContext } from 'react';
+import Router from 'next/router';
+
+import { useCallback, useState, useContext, useEffect } from 'react';
 import { Grid, Box } from 'grommet';
 import InfiniteScroll from 'react-bidirectional-infinite-scroll';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { CSSTransition } from 'react-transition-group';
 
 import CoverGridTile from './CoverGridTile/CoverGridTile';
 import DetailsViewerLayer from '../DetailsViewer/DetailsViewerLayer';
-import DiscogsDataContext from '../ApolloDataProvider/context';
+import ApolloDataContext from '../ApolloDataProvider/context';
+import LoadingGridLayer from './LoadingGridLayer';
 import LoadingGrid from './LoadingGrid';
 
-const ListTransitionBox = styled(Box)`
-  /* This fires as soon as the element enters the dorm */
-  .tile-transition-enter,
-  .tile-transition-appear {
-    /*We give the list the initial dimension of the list button*/
-    top: 0;
-    width: 120px;
-    max-height: 40px;
-    color: transparent;
-    background-color: #5a564c;
+const TransitionBox = styled.div`
+  &.tile-transition-enter,
+  &.tile-transition-appear {
+    opacity: 0.01;
   }
-  /* This is where we can add the transition*/
-  .tile-transition-enter-active,
-  .tile-transition-appear-active {
-    top: 45px;
-    width: 200px;
-    max-height: 200px;
-    background-color: #9e8949;
-    transition: all 400ms;
+  &.tile-transition-enter-active,
+  &.tile-transition-appear-active {
+    opacity: 1;
+    transition: all 500ms;
   }
-  /* This fires as soon as the this.state.showList is false */
-  .tile-transition-exit {
-    top: 45px;
-    width: 200px;
-    max-height: 200px;
-    background-color: #9e8949;
+  &.tile-transition-exit {
+    opacity: 1;
   }
-  /* fires as element leaves the DOM*/
-  .tile-transition-exit-active {
-    top: 0;
-    width: 120px;
-    max-height: 40px;
-    color: transparent;
-    background-color: #5a564c;
-    transition: all 400ms;
+  &.tile-transition-exit-active {
+    opacity: 0.01;
+    transition: all 500ms;
   }
 `;
 
 export default function CoverGrid({ columns }) {
-  const { data, loading, error, fetchPage } = useContext(DiscogsDataContext);
+  const {
+    data,
+    loading,
+    error,
+    hasMore,
+    fetchMoreData,
+    variables
+  } = useContext(ApolloDataContext);
+  const [dataMemory, setDataMemory] = useState(null);
+
+  useEffect(
+    () => {
+      if (data && !loading) {
+        setDataMemory(data);
+      }
+    },
+    [data, loading]
+  );
 
   const [showDetailsViewer, setShowDetailsViewer] = useState(false);
   const [detailsID, setDetailsID] = useState(null);
@@ -57,10 +58,11 @@ export default function CoverGrid({ columns }) {
     setDetailsID(id);
     setShowDetailsViewer(true);
   }, []);
-  if (loading) return <LoadingGrid />;
-  if (error) return error.message;
 
-  const { results } = data;
+  if (error) return error.message;
+  if (loading && !dataMemory) return <LoadingGrid />;
+
+  const { results } = loading ? dataMemory : data; // show previous grid data while loading new data
 
   const coverTiles = results.map(release => {
     const { id } = release;
@@ -70,29 +72,54 @@ export default function CoverGrid({ columns }) {
     };
 
     return (
-      <CSSTransition in appear timeout={500} key={id}>
-        <ListTransitionBox>
-          <CoverGridTile data={release} openDetailsViewer={openDetailsViewer} />
-        </ListTransitionBox>
-      </CSSTransition>
+      <CoverGridTile
+        key={id}
+        data={release}
+        openDetailsViewer={openDetailsViewer}
+      />
     );
   });
+
+  function handleReachTop() {
+    if (hasMore.prev) {
+      fetchMoreData.prevPage();
+    }
+  }
+  function handleReachBottom() {
+    if (hasMore.next) {
+      fetchMoreData.nextPage();
+    }
+  }
 
   return (
     <>
       <InfiniteScroll
-        onReachBottom={fetchPage.next}
-        onReachTop={fetchPage.prev}
+        onReachBottom={handleReachBottom}
+        onReachTop={handleReachTop}
       >
-        <Grid
-          as="ul"
-          style={{ padding: '1rem', margin: 0 }}
-          columns={{ count: columns, size: 'auto' }}
-          gap="medium"
+        <CSSTransition
+          in
+          appear
+          exit
+          timeout={500}
+          unmountOnExit
+          classNames="tile-transition"
         >
-          {coverTiles}
-        </Grid>
+          <TransitionBox>
+            <Grid
+              as="ul"
+              style={{ padding: '1rem', margin: 0 }}
+              columns={{ count: columns, size: 'auto' }}
+              gap="medium"
+            >
+              {coverTiles}
+            </Grid>
+          </TransitionBox>
+        </CSSTransition>
       </InfiniteScroll>
+
+      {loading && <LoadingGridLayer text={`loading page ${variables.page}`} />}
+
       {showDetailsViewer && (
         <DetailsViewerLayer
           searchData={data.results}
