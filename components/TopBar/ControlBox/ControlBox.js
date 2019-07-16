@@ -6,7 +6,7 @@ import FilterForm from '../FilterForm/FilterForm';
 import ViewSettings from '../ViewSettings/ViewSettings';
 import IconWrapper from '../../IconWrapper';
 
-function ControlBox({ small }) {
+function ControlBox() {
   const [showSettings, setShowSettings] = useState(false);
   const controlBox = useRef(null);
 
@@ -25,7 +25,7 @@ function ControlBox({ small }) {
         </Anchor>
       </Box>
 
-      <FilterForm small={small} />
+      <FilterForm />
 
       <Box direction="row" gap="1rem">
         <IconWrapper

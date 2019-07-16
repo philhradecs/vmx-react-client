@@ -1,22 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Form } from 'grommet';
+import TopBarContext from '../context';
 
-export default function EnhancedForm({
-  children,
-  formValues,
-  direction,
-  small,
-  ...props
-}) {
+export default function EnhancedForm({ children, direction, ...props }) {
+  const { prevQuery, small } = useContext(TopBarContext);
   const childrenWithExtraProp = React.Children.map(children, child => {
     return React.cloneElement(child, {
-      prevQuery: formValues,
+      prevQuery,
       small
     });
   });
 
   return (
-    <Form value={formValues} {...props}>
+    <Form value={prevQuery} {...props}>
       <Box direction={direction} justify="between" align="center">
         {childrenWithExtraProp}
       </Box>

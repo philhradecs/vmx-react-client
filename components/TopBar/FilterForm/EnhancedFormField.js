@@ -1,29 +1,29 @@
 import { FormField, Text } from 'grommet';
+import { useContext } from 'react';
 import withChangeObserver from './withChangeObserver';
 import { StyledPlaceholder } from './StyledComponents';
+import TopBarContext from '../context';
 
 export default function({
   component,
-  prevQuery,
-  small,
   placeholder,
   label,
-  ...props
+  inputRangeOptions,
+  ...formFieldProps
 }) {
-  const { parser, serializer, dropValuesRange } = props;
+  const { small, prevQuery } = useContext(TopBarContext);
 
   const ChangeAwareComponent = withChangeObserver(
     component,
     prevQuery,
-    parser,
-    serializer,
-    dropValuesRange
+    inputRangeOptions
   );
 
   return (
     <FormField
       component={ChangeAwareComponent}
-      {...props}
+      inputRangeOptions={inputRangeOptions}
+      {...formFieldProps}
       label={<Text>{small ? '' : label}</Text>}
       placeholder={<StyledPlaceholder value={small ? label : placeholder} />}
       small={small}

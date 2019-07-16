@@ -4,13 +4,12 @@ import { ConfigContext, DispatchContext, StateContext } from './contexts';
 
 export default function ContextProvider({
   children,
-  parser,
-  serializer,
-  dropValuesRange,
+  inputRangeOptions,
   value,
   name,
   placeholder
 }) {
+  const { dropValuesRange, serializer, parser } = inputRangeOptions;
   const { init, reducer } = initReducer(dropValuesRange, serializer, parser);
   const [state, dispatch] = useReducer(reducer, value, init);
 

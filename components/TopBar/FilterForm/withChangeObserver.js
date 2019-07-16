@@ -3,15 +3,15 @@ import { ThemeContext } from 'grommet';
 
 export default function withChangeObserver(
   WrappedComponent,
-  formValues,
-  parser,
-  serializer,
-  numRange
+  prevQuery = {},
+  inputRangeOptions = {}
 ) {
+  const { parser, serializer, dropValuesRange } = inputRangeOptions;
+
   const sanitize = val => val.replace(/\s+/g, '') || '';
   return ({ small, ...props }) => {
     const { name, value } = props;
-    const fieldValue = formValues[name] || '';
+    const fieldValue = prevQuery[name] || '';
     const [hasChanged, setHasChanged] = useState(false);
     const [initialFieldValue, setInitialFieldValue] = useState(fieldValue);
 
@@ -19,8 +19,8 @@ export default function withChangeObserver(
       () => {
         if (parser && serializer) {
           setHasChanged(
-            serializer(parser(value, numRange)) !==
-              serializer(parser(initialFieldValue, numRange))
+            serializer(parser(value, dropValuesRange)) !==
+              serializer(parser(initialFieldValue, dropValuesRange))
           );
         } else {
           setHasChanged(sanitize(initialFieldValue) !== sanitize(value));

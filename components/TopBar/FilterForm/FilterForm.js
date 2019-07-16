@@ -1,7 +1,7 @@
 import Router from 'next/router';
-import { Box, Button, Text } from 'grommet';
+import { Box, Button } from 'grommet';
 import { FormSearch, FormTrash } from 'grommet-icons';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 
 import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
@@ -12,6 +12,7 @@ import { StyledTextInput, StyledPlaceholder } from './StyledComponents';
 import musicTypes from '../../../data/discogsMusicTypes190510';
 import countries from '../../../data/countryList';
 import { parser, serializer } from './YearInputRange/lib/parserSerializer';
+import TopBarContext from '../context';
 
 const dropValuesRange = [1900, 2020];
 
@@ -25,6 +26,7 @@ const sortMusicType = (a, b) => {
 const sortCountries = () => {};
 
 function handleSubmit(event) {
+  console.log(event.value);
   event.preventDefault();
   const cleanValues = JSON.parse(
     JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
@@ -33,17 +35,21 @@ function handleSubmit(event) {
     cleanValues.years = serializer(parser(cleanValues.years, dropValuesRange));
     cleanValues.years = cleanValues.years.replace(/\s/g, '');
   }
+  cleanValues.page = 1;
+  cleanValues.per_page = 50;
   Router.push({ pathname: '/explorer', query: cleanValues });
 }
 
-export default function FilterForm({ small }) {
+export default function FilterForm() {
+  const { small } = useContext(TopBarContext);
+
   const selectText = useCallback(event => {
     event.target.select();
   }, []);
 
   return (
     <Box margin={{ horizontal: '1rem' }}>
-      <EnhancedForm small={small} onSubmit={handleSubmit} direction="row">
+      <EnhancedForm onSubmit={handleSubmit} direction="row">
         <EnhancedFormField
           name="query"
           label="Keyword"
@@ -80,10 +86,8 @@ export default function FilterForm({ small }) {
           name="years"
           label="Time"
           component={YearInputRange}
-          dropValuesRange={dropValuesRange}
           placeholder={<StyledPlaceholder value="type here" />}
-          parser={parser}
-          serializer={serializer}
+          inputRangeOptions={{ parser, serializer, dropValuesRange }}
         />
         <Box
           direction={small ? 'row' : 'column'}
