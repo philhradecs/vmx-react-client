@@ -4,9 +4,9 @@ import ControlBox from './ControlBox/ControlBox';
 
 export default function TopBar({ prevQuery, small }) {
   return (
-    <TopBarContext.Provider value={prevQuery}>
+    <TopBarContext.Provider value={{ prevQuery, small }}>
       {/* <CollapsibleWrapper> */}
-      <ControlBox prevQuery={prevQuery} small={small} />
+      <ControlBox />
       {/* </CollapsibleWrapper> */}
     </TopBarContext.Provider>
   );
