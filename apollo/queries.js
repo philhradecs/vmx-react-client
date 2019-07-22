@@ -1,6 +1,27 @@
 import { gql } from 'apollo-boost';
 
-const GET_SEARCH_RELEASES = gql`
+export const GET_FETCHED_PAGES = gql`
+  {
+    fetchedPages @client
+  }
+`;
+
+export const GET_ACTIVE_QUERY = gql`
+  {
+    activeQuery @client {
+      query
+      genre
+      style
+      country
+      years
+      artist
+      page
+      per_page
+    }
+  }
+`;
+
+export const GET_SEARCH_RELEASES = gql`
   query searchReleases(
     $query: String
     $genre: String
@@ -8,6 +29,8 @@ const GET_SEARCH_RELEASES = gql`
     $country: String
     $years: String
     $artist: String
+    $page: Int
+    $per_page: Int
   ) {
     searchReleases(
       query: $query
@@ -16,10 +39,16 @@ const GET_SEARCH_RELEASES = gql`
       country: $country
       years: $years
       artist: $artist
+      page: $page
+      per_page: $per_page
     ) {
-      items
-      page
-      pages
+      pagination {
+        items
+        page
+        pages
+        # fetchedPages @client
+        per_page
+      }
       results {
         title
         year
@@ -36,7 +65,7 @@ const GET_SEARCH_RELEASES = gql`
   }
 `;
 
-const GET_RELEASE_DETAILS = gql`
+export const GET_RELEASE_DETAILS = gql`
   query releaseDetails($id: ID!) {
     releaseDetails(id: $id) {
       title
@@ -62,4 +91,17 @@ const GET_RELEASE_DETAILS = gql`
   }
 `;
 
-export { GET_SEARCH_RELEASES, GET_RELEASE_DETAILS };
+export const GET_ARTIST_DETAILS = gql`
+  query releaseDetails($id: ID!) {
+    artistDetails(id: $id) {
+      name
+      realname
+      profile
+      images {
+        small
+        full
+      }
+      id
+    }
+  }
+`;
