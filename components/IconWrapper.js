@@ -52,10 +52,11 @@ export default function IconWrapper({
       disabled={disabled}
       {...hoverProps}
       {...props}
-    >
-      <Box align="center" justify="center" pad={iconPad}>
-        {colouredIcon}
-      </Box>
-    </Button>
+      icon={
+        <Box align="center" justify="center" pad={iconPad}>
+          {colouredIcon}
+        </Box>
+      }
+    />
   );
 }
