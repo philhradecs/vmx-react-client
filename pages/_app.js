@@ -56,12 +56,13 @@ cache.readQuery = (...args) => {
   }
 };
 // 'https://vmx-server.baumzeit.now.sh/graphql'
+// 'http://localhost:3000/graphql'
 
 const client = new ApolloClient({
   cache,
   link: new HttpLink({
     fetch,
-    uri: 'http://localhost:3000/graphql'
+    uri: 'https://vmx-server.baumzeit.now.sh/graphql'
   }),
   typeDefs,
   resolvers
