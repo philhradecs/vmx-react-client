@@ -1,7 +1,7 @@
 import { FormField, Text } from 'grommet';
 import { useContext } from 'react';
 import withChangeObserver from './withChangeObserver';
-import { StyledPlaceholder } from './StyledComponents';
+import { StyledPlaceholder } from './StyledFilterFormComponents';
 import TopBarContext from '../context';
 
 export default function({

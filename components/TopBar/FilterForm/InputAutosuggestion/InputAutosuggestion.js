@@ -1,6 +1,6 @@
 import { TextInput } from 'grommet';
 import { useCallback, useEffect, useState } from 'react';
-import { StyledTextInput } from '../StyledComponents';
+import { StyledTextInput } from '../StyledFilterFormComponents';
 
 function sanitizeInput(input) {
   return input

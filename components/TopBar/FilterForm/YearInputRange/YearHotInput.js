@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Keyboard, TextInput } from 'grommet';
 import { ConfigContext, DispatchContext, StateContext } from './lib/contexts';
-import { StyledTextInput } from '../StyledComponents';
+import { StyledTextInput } from '../StyledFilterFormComponents';
 
 export default React.forwardRef(function YearHotInput(props, ref) {
   const dispatch = useContext(DispatchContext);

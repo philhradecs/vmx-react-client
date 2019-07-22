@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, Text } from 'grommet';
 import { Projects, Stop, FormAdd, FormSubtract, Split } from 'grommet-icons';
 

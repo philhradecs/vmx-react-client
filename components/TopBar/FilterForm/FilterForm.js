@@ -7,7 +7,10 @@ import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
 import EnhancedForm from './EnhancedForm';
 import EnhancedFormField from './EnhancedFormField';
-import { StyledTextInput, StyledPlaceholder } from './StyledComponents';
+import {
+  StyledTextInput,
+  StyledPlaceholder
+} from './StyledFilterFormComponents';
 
 import musicTypes from '../../../data/discogsMusicTypes190510';
 import countries from '../../../data/countryList';
@@ -26,7 +29,6 @@ const sortMusicType = (a, b) => {
 const sortCountries = () => {};
 
 function handleSubmit(event) {
-  console.log(event.value);
   event.preventDefault();
   const cleanValues = JSON.parse(
     JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
