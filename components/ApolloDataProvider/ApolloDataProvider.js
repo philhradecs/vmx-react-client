@@ -1,7 +1,7 @@
 import Router from 'next/router';
 import React from 'react';
 import { Query } from 'react-apollo';
-import DiscogsDataContext from './context';
+import ApolloDataContext from './context';
 
 function formatQueryForForm(queryParam) {
   const query = { ...queryParam };
@@ -33,7 +33,11 @@ function ApolloDataProvider({
 
         const fetchedData = data ? data[typeName] : null;
         let hasMore = { next: false, prev: false };
-        let fetchMoreData = {};
+        let fetchMoreData = {
+          prevPage: () => {},
+          nextPage: () => {},
+          page: num => {}
+        };
 
         if (fetchedData && Object.keys(fetchedData).includes('pagination')) {
           const { page, pages } = fetchedData.pagination;
@@ -64,9 +68,9 @@ function ApolloDataProvider({
         }
 
         return (
-          <DiscogsDataContext.Provider
+          <ApolloDataContext.Provider
             value={{
-              data: fetchedData,
+              [typeName]: fetchedData,
               loading,
               error,
               variables,
@@ -76,7 +80,7 @@ function ApolloDataProvider({
             }}
           >
             {children}
-          </DiscogsDataContext.Provider>
+          </ApolloDataContext.Provider>
         );
       }}
     </Query>
