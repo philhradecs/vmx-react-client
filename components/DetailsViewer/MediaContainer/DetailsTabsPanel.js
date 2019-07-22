@@ -6,7 +6,7 @@ import ApolloDataContext from '../../ApolloDataProvider/context';
 import ArtistDetails from './ArtistDetails';
 import ApolloDataProvider from '../../ApolloDataProvider/ApolloDataProvider';
 import { GET_ARTIST_DETAILS } from '../../../apollo/queries';
-import { StyledTabs } from './StyledMediaContainerComponents';
+import VerticalTabs from './VerticalTabs';
 import ReleaseDetails from './ReleaseDetails';
 import LoadingArtistDetails from './LoadingArtistDetails';
 
@@ -32,7 +32,10 @@ export default function DetailsTabsPanel() {
   };
 
   return (
-    <StyledTabs activeIndex={activeIndex} onActive={tab => setActivIndex(tab)}>
+    <VerticalTabs
+      activeIndex={activeIndex}
+      onActive={tab => setActivIndex(tab)}
+    >
       <Tab plain title={styledIcon(<Disc />, 0)}>
         <ReleaseDetails />
       </Tab>
@@ -53,6 +56,6 @@ export default function DetailsTabsPanel() {
           <LoadingArtistDetails />
         )}
       </Tab>
-    </StyledTabs>
+    </VerticalTabs>
   );
 }
