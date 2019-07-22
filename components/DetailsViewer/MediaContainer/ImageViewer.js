@@ -8,7 +8,7 @@ import ApolloDataContext from '../../ApolloDataProvider/context';
 
 export default function ImageViewer(props) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const { data: detailsData, activeData } = useContext(ApolloDataContext);
+  const { releaseDetails, activeData } = useContext(ApolloDataContext);
 
   useEffect(
     () => {
@@ -21,17 +21,17 @@ export default function ImageViewer(props) {
     <Box fill gap="1rem" {...props}>
       <MainImage
         imageSrc={
-          detailsData && detailsData.images.length > 0
-            ? detailsData.images[activeImageIndex].full
+          releaseDetails && releaseDetails.images.length > 0
+            ? releaseDetails.images[activeImageIndex].full
             : activeData.image.full
         }
       />
       <Box height="25%">
-        {detailsData ? (
+        {releaseDetails ? (
           <ImageSelector
             activeImageIndex={activeImageIndex}
             setActiveImageIndex={setActiveImageIndex}
-            images={detailsData.images}
+            images={releaseDetails.images}
           />
         ) : (
           <LoadingImageSelector />
