@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { ThemeContext, Tabs } from 'grommet';
 
-export const StyledTabs = ({ children, ...props }) => {
+export default function VerticalTabs({ children, ...props }) {
   const value = {
     tabs: {
       extend: { flexDirection: 'row' },
@@ -23,4 +23,4 @@ export const StyledTabs = ({ children, ...props }) => {
       <Tabs {...props}>{children}</Tabs>
     </ThemeContext.Extend>
   );
-};
+}
