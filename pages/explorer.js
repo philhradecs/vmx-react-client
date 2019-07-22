@@ -41,7 +41,7 @@ function Explorer({ router }) {
         typeName="searchReleases"
         load
       >
-        <PaginationStatusBar />
+        {/* <PaginationStatusBar /> */}
         <Box height="100%">
           <CoverGrid columns={5} />
         </Box>
