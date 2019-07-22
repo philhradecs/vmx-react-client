@@ -4,11 +4,11 @@ import LoadingTile from './LoadingTile';
 import ApolloDataContext from '../../ApolloDataProvider/context';
 
 export default function Back() {
-  const { data } = useContext(ApolloDataContext);
+  const { releaseDetails } = useContext(ApolloDataContext);
 
-  if (!data) return <LoadingTile />;
+  if (!releaseDetails) return <LoadingTile />;
 
-  const { images } = data;
+  const { images } = releaseDetails;
   const image =
     images.length > 1
       ? images[1]
@@ -36,7 +36,7 @@ export default function Back() {
         overflow="hidden"
         round="4px"
       >
-        {data.tracklist.map(track => {
+        {releaseDetails.tracklist.map(track => {
           const { title, position } = track;
           const margin = { bottom: '3px' };
           return (
