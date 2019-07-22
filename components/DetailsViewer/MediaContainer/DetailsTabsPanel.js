@@ -1,40 +1,58 @@
-import { Box, Tabs, Tab, Text } from 'grommet';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { Box, Tab, Text, Heading } from 'grommet';
+
 import { Disc, Group } from 'grommet-icons';
-import IconWrapper from '../../IconWrapper';
 import ApolloDataContext from '../../ApolloDataProvider/context';
+import ArtistDetails from './ArtistDetails';
+import ApolloDataProvider from '../../ApolloDataProvider/ApolloDataProvider';
+import { GET_ARTIST_DETAILS } from '../../../apollo/queries';
+import { StyledTabs } from './StyledMediaContainerComponents';
+import ReleaseDetails from './ReleaseDetails';
+import LoadingArtistDetails from './LoadingArtistDetails';
 
 export default function DetailsTabsPanel() {
   const [activeIndex, setActivIndex] = useState(0);
-  const { data: detailsData, activeData } = useContext(ApolloDataContext);
+  const { releaseDetails } = useContext(ApolloDataContext);
 
-  const withWrapper = (icon, tabIndex) => (
-    <IconWrapper selected={activeIndex === tabIndex} highlightColor="accent-4">
-      {icon}
-    </IconWrapper>
-  );
+  const styledIcon = (icon, tabIndex) => {
+    const isActive = activeIndex === tabIndex;
+    return (
+      <Box
+        background={isActive ? 'brand' : 'white'}
+        round="3px"
+        align="center"
+        justify="center"
+        pad="0.3rem"
+      >
+        {React.cloneElement(icon, {
+          color: isActive ? 'white' : 'brand'
+        })}
+      </Box>
+    );
+  };
 
   return (
-    <Tabs activeIndex={activeIndex} onActive={tab => setActivIndex(tab)}>
-      <Tab title={withWrapper(<Disc color="brand" />, 0)}>
-        <Box>
-          {Object.keys(activeData)
-            .filter(
-              key => !['image', '__typename', 'title', 'id'].includes(key)
-            )
-            .map(key => (
-              <Box key={key} direction="row" justify="between" gap="1.5rem">
-                <Text weight="bold">
-                  {key[0].toUpperCase() + key.substr(1)}
-                </Text>
-                <Text>{JSON.stringify(activeData[key])}</Text>
-              </Box>
-            ))}
-        </Box>
+    <StyledTabs activeIndex={activeIndex} onActive={tab => setActivIndex(tab)}>
+      <Tab plain title={styledIcon(<Disc />, 0)}>
+        <ReleaseDetails />
       </Tab>
-      <Tab title={withWrapper(<Group color="brand" />, 1)}>
-        <Box pad="medium">Artist description</Box>
+      <Tab plain title={styledIcon(<Group />, 1)}>
+        {releaseDetails ? (
+          <ApolloDataProvider
+            apolloOptions={{
+              query: GET_ARTIST_DETAILS,
+              variables: { id: releaseDetails.artists[0].id }
+            }}
+            typeName="artistDetails"
+            loadingComponent={<LoadingArtistDetails />}
+            load
+          >
+            <ArtistDetails />
+          </ApolloDataProvider>
+        ) : (
+          <LoadingArtistDetails />
+        )}
       </Tab>
-    </Tabs>
+    </StyledTabs>
   );
 }
