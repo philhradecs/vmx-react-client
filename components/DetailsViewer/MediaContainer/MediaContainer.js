@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { Box, Grid, Text } from 'grommet';
+import { Box, Grid, Heading } from 'grommet';
 import { Close } from 'grommet-icons';
 
 import ImageViewer from './ImageViewer';
-import IconWrapper from '../../IconWrapper'
+import IconWrapper from '../../IconWrapper';
 import DetailsTabsPanel from './DetailsTabsPanel';
 
 import ApolloDataContext from '../../ApolloDataProvider/context';
@@ -50,7 +50,7 @@ export default function MediaContainer({ close, ...props }) {
           <ImageViewer />
         </Box>
         <Box gridArea="title">
-          <Text>{activeData.title}</Text>
+          <Heading size="1.5rem">{activeData.title}</Heading>
         </Box>
         <Box gridArea="close">
           <IconWrapper onClick={close} iconPad="0.5rem" highlightColor="black">
