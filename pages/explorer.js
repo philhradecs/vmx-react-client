@@ -1,5 +1,5 @@
 import { withRouter } from 'next/router';
-import { Box } from 'grommet';
+import { Box, Grid } from 'grommet';
 
 import TopBar from '../components/TopBar/TopBar';
 import CoverGrid from '../components/CoverGrid/CoverGrid';
@@ -8,6 +8,7 @@ import musicTypes from '../data/discogsMusicTypes190510';
 import { GET_SEARCH_RELEASES } from '../apollo/queries';
 import ApolloDataProvider from '../components/ApolloDataProvider/ApolloDataProvider';
 import PaginationStatusBar from '../components/PaginationStatusBar/PaginationStatusBar';
+import PaginationBar from '../components/PaginationBar/PaginationBar';
 
 function formatQueryForApollo(queryParam) {
   const query = { ...queryParam };
@@ -34,18 +35,35 @@ function Explorer({ router }) {
   };
 
   return (
-    <Box direction="column" height="100vh">
-      <TopBar prevQuery={router.query} small />
-      <ApolloDataProvider
-        apolloOptions={apolloOptions}
-        typeName="searchReleases"
-        load
+    <Box height="100vh">
+      <Grid
+        fill
+        rows={['auto', 'flex']}
+        columns={['auto', 'flex']}
+        // gap="small"
+        areas={[
+          { name: 'topBar', start: [0, 0], end: [1, 0] },
+          { name: 'paginationBar', start: [0, 1], end: [0, 1] },
+          { name: 'coverGrid', start: [1, 1], end: [1, 1] }
+        ]}
       >
-        {/* <PaginationStatusBar /> */}
-        <Box height="100%">
-          <CoverGrid columns={5} />
+        <Box gridArea="topBar">
+          <TopBar prevQuery={router.query} small />
         </Box>
-      </ApolloDataProvider>
+        <ApolloDataProvider
+          apolloOptions={apolloOptions}
+          typeName="searchReleases"
+          load
+        >
+          {/* <PaginationStatusBar /> */}
+          <Box gridArea="coverGrid" overflow="hidden">
+            <CoverGrid columns={5} />
+          </Box>
+          <Box gridArea="paginationBar">
+            <PaginationBar />
+          </Box>
+        </ApolloDataProvider>
+      </Grid>
     </Box>
   );
 }
