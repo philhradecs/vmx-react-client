@@ -127,9 +127,8 @@ export default function CoverGrid({ columns }) {
             <TransitionBox>
               <Grid
                 as="ul"
-                style={{ padding: '1rem', margin: 0 }}
+                style={{ padding: '0', margin: '0.5rem' }}
                 columns={{ count: columns, size: 'auto' }}
-                gap="medium"
               >
                 {coverTiles}
               </Grid>
