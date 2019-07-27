@@ -11,13 +11,15 @@ import typeDefs from '../apollo/typeDefs';
 
 const GlobalStyle = createGlobalStyle`
   * {
-   box-sizing: border-box;
+    box-sizing: border-box;
   }
-  body, html {
+  body,
+  html {
     margin: 0;
     height: 100%;
   }
 `;
+
 const theme = {
   global: {
     font: {
@@ -26,7 +28,7 @@ const theme = {
   }
 };
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({ freezeResults: true });
 
 cache.writeData({
   data: {
@@ -65,7 +67,8 @@ const client = new ApolloClient({
     uri: 'https://vmx-server.baumzeit.now.sh/graphql'
   }),
   typeDefs,
-  resolvers
+  resolvers,
+  assumeImmutableResults: true
 });
 
 class CustomApp extends App {
