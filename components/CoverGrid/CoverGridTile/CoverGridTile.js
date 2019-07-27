@@ -99,7 +99,7 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
   const containerStyle = { width: '100%', height: '100%' };
 
   return (
-    <Box as="li" {...hoverProps} onClick={toggleBack} {...props}>
+    <Box as="li" pad="small" {...hoverProps} onClick={toggleBack} {...props}>
       <Ratio>
         <AnimatedCombinedOverlay
           buttonMap={buttonMap}
