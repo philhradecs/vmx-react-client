@@ -20,7 +20,8 @@ function ApolloDataProvider({
   typeName,
   load,
   additionalContext,
-  loadingComponent
+  loadingComponent,
+  log = false
 }) {
   return (
     <Query
@@ -65,6 +66,9 @@ function ApolloDataProvider({
               });
             }
           };
+        }
+        if (log) {
+          console.log(typeName, fetchedData);
         }
 
         return (
