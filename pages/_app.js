@@ -6,8 +6,6 @@ import fetch from 'node-fetch';
 import { Grommet } from 'grommet';
 
 import { createGlobalStyle } from 'styled-components';
-import resolvers from '../apollo/resolvers';
-import typeDefs from '../apollo/typeDefs';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -21,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
 const theme = {
   global: {
     font: {
-      family: 'Roboto'
+      family: 'sans-serif'
     }
   }
 };
@@ -63,9 +61,7 @@ const client = new ApolloClient({
   link: new HttpLink({
     fetch,
     uri: 'https://vmx-server.baumzeit.now.sh/graphql'
-  }),
-  typeDefs,
-  resolvers
+  })
 });
 
 class CustomApp extends App {
