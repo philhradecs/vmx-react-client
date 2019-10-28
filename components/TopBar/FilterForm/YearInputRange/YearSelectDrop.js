@@ -1,22 +1,38 @@
-import { useContext, useCallback } from 'react';
+import React, { useContext } from 'react';
 import { Box, Drop, RangeSelector, Stack, Text } from 'grommet';
 import { DispatchContext, StateContext } from './lib/contexts';
+
+const DisplayRange = React.memo(({ dropValues }) => {
+  const displayValues = dropValues.reduce((list, val, i) => {
+    return i % 10 === 0 ? [...list, val] : list;
+  }, []);
+
+  return displayValues.map(value => (
+    <Box key={value}>
+      <Text
+        style={{
+          fontFamily: 'monospace',
+          userSelect: 'none',
+          msUserSelect: 'none',
+          MozUserSelect: 'none'
+        }}
+        margin="0.3rem"
+      >
+        {value}
+      </Text>
+    </Box>
+  ));
+});
 
 export default function YearSelectDrop({ inputRef }) {
   const dispatch = useContext(DispatchContext);
   const state = useContext(StateContext);
   const { dropSelection, dropValues } = state;
 
-  const handleChange = useCallback(
-    selection => {
-      dispatch({ type: 'applyNewSelection', payload: selection });
-    },
-    [dispatch]
-  );
+  const handleChange = selection =>
+    dispatch({ type: 'applyNewSelection', payload: selection });
 
-  const closeDrop = useCallback(() => {
-    dispatch({ type: 'closeDrop' });
-  }, [dispatch]);
+  const closeDrop = () => dispatch({ type: 'closeDrop' });
 
   function handleSelectionMod(mod) {
     const [minSelect, maxSelect] = [...dropSelection];
@@ -59,10 +75,6 @@ export default function YearSelectDrop({ inputRef }) {
     }
   }
 
-  const displayValues = dropValues.reduce((list, val, i) => {
-    return i % 10 === 0 ? [...list, val] : list;
-  }, []);
-
   return (
     <Drop
       target={inputRef.current}
@@ -80,21 +92,7 @@ export default function YearSelectDrop({ inputRef }) {
           border={{ side: 'bottom', size: '2px', color: 'accent-2' }}
           justify="between"
         >
-          {displayValues.map(value => (
-            <Box key={value}>
-              <Text
-                style={{
-                  fontFamily: 'monospace',
-                  userSelect: 'none',
-                  msUserSelect: 'none',
-                  MozUserSelect: 'none'
-                }}
-                margin="0.3rem"
-              >
-                {value}
-              </Text>
-            </Box>
-          ))}
+          <DisplayRange dropValues={dropValues} />
         </Box>
         <RangeSelector
           id="rangeSelector"
