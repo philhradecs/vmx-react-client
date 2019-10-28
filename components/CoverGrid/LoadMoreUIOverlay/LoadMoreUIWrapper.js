@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Stack, Box, Text, Button } from 'grommet';
-import { LinkUp, Link, LinkDown } from 'grommet-icons';
+
+import { Box } from 'grommet';
+import { LinkUp, LinkDown } from 'grommet-icons';
 import BreakBlock from './BreakBlock';
 import ApolloDataContext from '../../ApolloDataProvider/context';
-import IconWrapper from '../../IconWrapper';
 
 export default function LoadMoreUIWrapper({
   children,
@@ -57,60 +57,50 @@ export default function LoadMoreUIWrapper({
   );
 
   const addPixelSuffix = num => `${num}px`;
-  const min = addPixelSuffix(minHeight);
-  const current = addPixelSuffix(height);
+  const current = addPixelSuffix(height + minHeight);
   const progressDelta = (height - minHeight) / (limit - minHeight);
 
   return (
-    <Stack fill onWheel={handleWheel} interactiveChild="first">
+    <Box fill onWheel={handleWheel} style={{ position: 'relative' }}>
       <Box fill>{children}</Box>
-      <Box direction="column" fill>
-        <BreakBlock
-          height={trackScroll.top ? current : min}
-          align="start"
-          pad={{ horizontal: '1rem' }}
-          background={
-            trackScroll.top
-              ? { color: 'neutral-2', opacity: 1 - progressDelta }
-              : 'rgba(255,255,255,0.2)'
-          }
-        >
-          <IconWrapper
-            disabled={!hasMore.prev}
-            label={
-              <Text size="small">
-                {!hasMore.prev ? '' : `page ${variables.page - 1}`}
-              </Text>
-            }
-          >
-            <LinkUp size="1.2rem" color="brand" />
-          </IconWrapper>
-        </BreakBlock>
 
-        <Box flex />
-
-        <BreakBlock
-          height={trackScroll.bottom ? current : min}
-          align="start"
-          pad={{ horizontal: '1rem' }}
-          background={
-            trackScroll.bottom
-              ? { color: 'neutral-2', opacity: 1 - progressDelta }
-              : 'rgba(255,255,255,0.2)'
-          }
-        >
-          <IconWrapper
-            disabled={!hasMore.next}
-            label={
-              <Text size="small">
-                {!hasMore.next ? '' : `page ${variables.page + 1}`}
-              </Text>
+      {hasMore.prev &&
+        trackScroll.top && (
+          <BreakBlock
+            anchor="top"
+            height={current}
+            background={
+              trackScroll.top
+                ? { color: 'neutral-2', opacity: 0.8 * (1 - progressDelta) }
+                : 'rgba(255,255,255,0.4)'
             }
-          >
-            <LinkDown size="1.2rem" color="brand" />
-          </IconWrapper>
-        </BreakBlock>
-      </Box>
-    </Stack>
+            href={{
+              pathname: '/explorer',
+              query: { ...variables, page: variables.page - 1 }
+            }}
+            label={`page ${variables.page - 1}`}
+            icon={<LinkUp size="1.2rem" color="brand" />}
+          />
+        )}
+
+      {hasMore.next &&
+        trackScroll.bottom && (
+          <BreakBlock
+            anchor="bottom"
+            height={current}
+            background={
+              trackScroll.bottom
+                ? { color: 'neutral-2', opacity: 0.8 * (1 - progressDelta) }
+                : 'rgba(255,255,255,0.4)'
+            }
+            href={{
+              pathname: '/explorer',
+              query: { ...variables, page: variables.page + 1 }
+            }}
+            label={`page ${variables.page + 1}`}
+            icon={<LinkDown size="1.2rem" color="brand" />}
+          />
+        )}
+    </Box>
   );
 }
