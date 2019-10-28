@@ -57,11 +57,19 @@ export default function CoverGrid({ columns }) {
   const [showDetailsViewer, setShowDetailsViewer] = useState(false);
   const [detailsID, setDetailsID] = useState(null);
 
-  const { results } = loading ? dataMemory : searchReleases; // show previous grid data while loading new data
+  let resultsForDisplay = [];
+  if (loading) {
+    resultsForDisplay = dataMemory.results;
+  }
+  if (searchReleases) {
+    resultsForDisplay = searchReleases.results;
+  }
+
+  // show previous grid data while loading new data
 
   const coverTiles = useMemo(
     () =>
-      results.map(release => {
+      resultsForDisplay.map(release => {
         const { id } = release;
         const openDetailsViewer = event => {
           event.stopPropagation();
@@ -77,11 +85,12 @@ export default function CoverGrid({ columns }) {
           />
         );
       }),
-    [results]
+    [resultsForDisplay]
   );
 
   if (error) return error.message;
   if (loading && !dataMemory) return <LoadingGrid />;
+  if (!loading && resultsForDisplay.length === 0) return 'No results';
 
   function handleReachTop() {
     if (hasMore.prev) {
@@ -108,9 +117,9 @@ export default function CoverGrid({ columns }) {
         callbackBottom={fetchMoreData.nextPage}
         trackScroll={trackScroll}
         resetReachedEnds={resetReachedEnds}
-        minHeight={40}
-        limit={350}
-        step={40}
+        minHeight={30}
+        limit={200}
+        step={30}
       >
         <InfiniteScroll
           onReachBottom={handleReachBottom}
@@ -137,7 +146,7 @@ export default function CoverGrid({ columns }) {
         </InfiniteScroll>
       </LoadMoreUIWrapper>
 
-      {loading && <LoadingGridLayer text="loading" />}
+      {loading && <LoadingGridLayer text={`loading page ${variables.page}`} />}
 
       {showDetailsViewer && (
         <DetailsViewerLayer

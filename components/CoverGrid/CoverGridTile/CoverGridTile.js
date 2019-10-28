@@ -20,8 +20,8 @@ function TileTransition({ children, isHovering }) {
   const transition = {
     transform: isHovering ? 'scale(0.8)' : '',
     transformOrigin: '5% 5%',
-    transition: 'all 200ms ease',
-    transitionDelay: isHovering ? '0' : '30'
+    transition: 'all 200ms ease'
+    // transitionDelay: isHovering ? '0' : '30'
   };
   return (
     <Box fill style={transition}>
@@ -72,13 +72,6 @@ export default function CoverGridTile({ data, openDetailsViewer, ...props }) {
     400,
     [isHovering]
   );
-
-  // toggleBack on mouseLeave
-  // useEffect(() => {
-  //   if (!isHovering && showBack) {
-  //     toggleBack();
-  //   }
-  // }, [isHovering, showBack, toggleBack]);
 
   function flipTile(event) {
     event.stopPropagation();

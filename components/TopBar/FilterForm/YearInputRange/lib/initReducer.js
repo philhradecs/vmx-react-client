@@ -1,4 +1,4 @@
-function initReducer(numRange, serializer, parser) {
+function initReducer({ dropValuesRange: numRange, serializer, parser }) {
   function readYearsByIndexRange(dropValues, [start, end]) {
     return dropValues.slice(start, end + 1);
   }
@@ -76,7 +76,8 @@ function initReducer(numRange, serializer, parser) {
 
         return {
           ...state,
-          inputValue: input
+          inputValue: input,
+          yearDropOpen: true
         };
       }
       case 'applyNewSelection': {

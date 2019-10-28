@@ -1,11 +1,5 @@
 import { gql } from 'apollo-boost';
 
-export const GET_FETCHED_PAGES = gql`
-  {
-    fetchedPages @client
-  }
-`;
-
 export const GET_ACTIVE_QUERY = gql`
   {
     activeQuery @client {

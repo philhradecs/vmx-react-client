@@ -23,28 +23,27 @@ const GlobalStyle = createGlobalStyle`
 const theme = {
   global: {
     font: {
-      family: 'Roboto'
+      family: 'sans-serif'
     }
   }
 };
 
 const cache = new InMemoryCache({ freezeResults: true });
 
-cache.writeData({
-  data: {
-    activeQuery: {
-      query: '',
-      genre: '',
-      style: '',
-      country: '',
-      years: '',
-      artist: '',
-      page: 1,
-      per_page: 100,
-      __typename: 'SearchQuery'
-    }
-  }
-});
+// cache.writeData({
+//   data: {
+//     activeQuery: {
+// query: '',
+// musicType: '',
+// country: '',
+// years: '',
+// artist: '',
+// page: 1,
+// per_page: 100,
+//       __typename: 'SearchQuery'
+//     }
+//   }
+// });
 
 // TODO: Monkey-patching in a fix for an open issue suggesting that
 // `readQuery` should return null or undefined if the query is not yet in the

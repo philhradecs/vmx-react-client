@@ -5,10 +5,12 @@ import ImageSelector from './ImageSelector';
 import LoadingImageSelector from './LoadingImageSelector';
 import MainImage from './MainImage';
 import ApolloDataContext from '../../ApolloDataProvider/context';
+import { ActiveSearchDataContext } from './context';
 
 export default function ImageViewer(props) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const { releaseDetails, activeData } = useContext(ApolloDataContext);
+  const { releaseDetails } = useContext(ApolloDataContext);
+  const { activeData } = useContext(ActiveSearchDataContext);
 
   useEffect(
     () => {

@@ -1,4 +1,3 @@
-import { TextInput } from 'grommet';
 import { useCallback, useEffect, useState } from 'react';
 import { StyledTextInput } from '../StyledFilterFormComponents';
 
@@ -17,7 +16,7 @@ export default function InputAutosuggestion({
 }) {
   const [matches, setMatches] = useState([]);
   const [initialRender, setInitialRender] = useState(true);
-  const { value } = formProps;
+  const { value, name } = formProps;
 
   const findAndSortMatches = useCallback(
     keyword => {
@@ -56,7 +55,9 @@ export default function InputAutosuggestion({
   );
 
   function handleSelect(event) {
-    formProps.onChange({ value: event.suggestion.label });
+    formProps.onChange({
+      target: { value: event.suggestion.label, name }
+    });
   }
 
   function handleFocusClick(event) {
