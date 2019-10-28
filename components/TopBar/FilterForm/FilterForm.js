@@ -1,16 +1,15 @@
 import Router from 'next/router';
-import { Box, Button } from 'grommet';
+import { useGlobal } from 'reactn';
+import { Formik } from 'formik';
+
+import { Box, Button, Text } from 'grommet';
 import { FormSearch, FormTrash } from 'grommet-icons';
 import { useCallback, useContext } from 'react';
 
 import YearInputRange from './YearInputRange/YearInputRange';
 import InputAutosuggestion from './InputAutosuggestion/InputAutosuggestion';
-import EnhancedForm from './EnhancedForm';
 import EnhancedFormField from './EnhancedFormField';
-import {
-  StyledTextInput,
-  StyledPlaceholder
-} from './StyledFilterFormComponents';
+import { StyledTextInput } from './StyledFilterFormComponents';
 
 import musicTypes from '../../../data/discogsMusicTypes190510';
 import countries from '../../../data/countryList';
@@ -28,79 +27,194 @@ const sortMusicType = (a, b) => {
 
 const sortCountries = () => {};
 
-function handleSubmit(event) {
-  event.preventDefault();
+function cleanValuesAndRoute(values, { setSubmitting }) {
   const cleanValues = JSON.parse(
-    JSON.stringify(event.value, (k, v) => (v.length === 0 ? undefined : v))
+    JSON.stringify(values, (k, v) => (v.length === 0 ? undefined : v))
   );
   if (Object.keys(cleanValues).includes('years')) {
     cleanValues.years = serializer(parser(cleanValues.years, dropValuesRange));
     cleanValues.years = cleanValues.years.replace(/\s/g, '');
   }
-  cleanValues.page = 1;
-  cleanValues.per_page = 50;
+  setSubmitting();
   Router.push({ pathname: '/explorer', query: cleanValues });
 }
 
 export default function FilterForm() {
-  const { small } = useContext(TopBarContext);
+  const { prevQuery, small } = useContext(TopBarContext);
+
+  const formFieldNames = ['query', 'musicType', 'country', 'years', 'artist'];
+
+  // filter out any query parameters that do not correspond to a form field
+  const prevQueryFormValues = prevQuery
+    ? Object.keys(prevQuery)
+        .filter(key => formFieldNames.includes(key))
+        .reduce((obj, key) => {
+          return { ...obj, [key]: prevQuery[key] };
+        }, {})
+    : { ...prevQuery };
+
+  const [updateFormField, setUpdateFormField] = useGlobal('updateFormField');
+
+  function initSetFieldValue(setFieldValue) {
+    if (!updateFormField) {
+      setUpdateFormField(setFieldValue);
+    }
+  }
 
   const selectText = useCallback(event => {
     event.target.select();
   }, []);
 
+  // construct object from formFieldNames with default value
+  const defaultFormValues = formFieldNames.reduce((obj, fieldName) => {
+    return { ...obj, [fieldName]: '' };
+  }, {});
+
+  const initialValues = {
+    ...defaultFormValues,
+    ...prevQueryFormValues
+  };
+
   return (
     <Box margin={{ horizontal: '1rem' }}>
-      <EnhancedForm onSubmit={handleSubmit} direction="row">
-        <EnhancedFormField
-          name="query"
-          label="Keyword"
-          component={StyledTextInput}
-          onClick={selectText}
-          placeholder={<StyledPlaceholder value="type here" />}
-        />
-        <EnhancedFormField
-          name="artist"
-          label="Artist"
-          component={StyledTextInput}
-          onClick={selectText}
-          placeholder={<StyledPlaceholder value="type here" />}
-        />
-        <EnhancedFormField
-          name="country"
-          label="Country"
-          component={InputAutosuggestion}
-          suggestionSort={sortCountries}
-          suggestionList={countries}
-          // suggestionUser
-          placeholder={<StyledPlaceholder value="type here" />}
-        />
-        <EnhancedFormField
-          name="musicType"
-          label="Genre"
-          component={InputAutosuggestion}
-          suggestionSort={sortMusicType}
-          suggestionList={musicTypes}
-          // suggestionUser
-          placeholder={<StyledPlaceholder value="type here" />}
-        />
-        <EnhancedFormField
-          name="years"
-          label="Time"
-          component={YearInputRange}
-          placeholder={<StyledPlaceholder value="type here" />}
-          inputRangeOptions={{ parser, serializer, dropValuesRange }}
-        />
-        <Box
-          direction={small ? 'row' : 'column'}
-          pad={{ left: '1rem' }}
-          gap="0.5rem"
-          flex="grow"
-        >
-          <Button type="submit" label="Search" primary icon={<FormSearch />} />
-          <Button type="reset" label="Clear" icon={<FormTrash />} />
-        </Box>
-      </EnhancedForm>
+      <Formik onSubmit={cleanValuesAndRoute} initialValues={initialValues}>
+        {({ values, handleChange, handleSubmit, setFieldValue, setValues }) => {
+          initSetFieldValue(setFieldValue);
+
+          const clearForm = () => {
+            setValues(defaultFormValues);
+          };
+
+          const fieldIsEqualTo = (name, compareObj) => {
+            return (
+              values[name].replace(/\s/g, '') ===
+              compareObj[name].replace(/\s/g, '')
+            );
+          };
+
+          const formIsEqualToInitial = Object.keys(values).every(field =>
+            fieldIsEqualTo(field, initialValues)
+          );
+
+          return (
+            <form
+              onSubmit={event => {
+                event.preventDefault();
+                handleSubmit();
+              }}
+            >
+              <Box direction="row" justify="between" align="center">
+                <EnhancedFormField
+                  label="Keyword"
+                  placeholder="type here"
+                  modified={!fieldIsEqualTo('query', initialValues)}
+                >
+                  <StyledTextInput
+                    name="query"
+                    value={values.query}
+                    onChange={handleChange}
+                    onClick={selectText}
+                    hasValue={!fieldIsEqualTo('query', defaultFormValues)}
+                    clearInput={() =>
+                      setFieldValue('query', defaultFormValues.query)
+                    }
+                  />
+                </EnhancedFormField>
+                <EnhancedFormField
+                  label="Artist"
+                  placeholder="type here"
+                  modified={!fieldIsEqualTo('artist', initialValues)}
+                >
+                  <StyledTextInput
+                    name="artist"
+                    value={values.artist}
+                    onChange={handleChange}
+                    onClick={selectText}
+                    hasValue={!fieldIsEqualTo('artist', defaultFormValues)}
+                    clearInput={() =>
+                      setFieldValue('artist', defaultFormValues.artist)
+                    }
+                  />
+                </EnhancedFormField>
+                <EnhancedFormField
+                  label="Country"
+                  placeholder="type here"
+                  modified={!fieldIsEqualTo('country', initialValues)}
+                >
+                  <InputAutosuggestion
+                    name="country"
+                    onChange={handleChange}
+                    value={values.country}
+                    hasValue={!fieldIsEqualTo('country', defaultFormValues)}
+                    clearInput={() =>
+                      setFieldValue('country', defaultFormValues.country)
+                    }
+                    suggestionSort={sortCountries}
+                    suggestionList={countries}
+                    // suggestionUser
+                  />
+                </EnhancedFormField>
+                <EnhancedFormField
+                  label="Genre"
+                  placeholder="type here"
+                  modified={!fieldIsEqualTo('musicType', initialValues)}
+                >
+                  <InputAutosuggestion
+                    name="musicType"
+                    onChange={handleChange}
+                    value={values.musicType}
+                    hasValue={!fieldIsEqualTo('musicType', defaultFormValues)}
+                    clearInput={() =>
+                      setFieldValue('musicType', defaultFormValues.musicType)
+                    }
+                    suggestionSort={sortMusicType}
+                    suggestionList={musicTypes}
+                    // suggestionUser
+                  />
+                </EnhancedFormField>
+                <EnhancedFormField
+                  label="Time"
+                  placeholder="type here"
+                  modified={!fieldIsEqualTo('years', initialValues)}
+                >
+                  <YearInputRange
+                    name="years"
+                    onChange={handleChange}
+                    value={values.years}
+                    hasValue={!fieldIsEqualTo('years', defaultFormValues)}
+                    clearInput={() =>
+                      setFieldValue('years', defaultFormValues.years)
+                    }
+                    inputRangeOptions={{ parser, serializer, dropValuesRange }}
+                  />
+                </EnhancedFormField>
+                <Box
+                  direction={small ? 'row' : 'column'}
+                  pad={{ left: '1rem' }}
+                  gap="0.5rem"
+                  flex="grow"
+                >
+                  <Button
+                    type="submit"
+                    label={<Text size="small">Search</Text>}
+                    primary
+                    icon={<FormSearch />}
+                    gap="xsmall"
+                    color={!formIsEqualToInitial ? 'accent-4' : 'brand'}
+                  />
+                  <Button
+                    type="reset"
+                    onClick={clearForm}
+                    label={<Text size="small">Clear</Text>}
+                    icon={<FormTrash />}
+                    gap="xsmall"
+                  />
+                </Box>
+              </Box>
+            </form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 }

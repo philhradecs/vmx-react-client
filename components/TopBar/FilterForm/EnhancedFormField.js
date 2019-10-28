@@ -1,32 +1,44 @@
-import { FormField, Text } from 'grommet';
-import { useContext } from 'react';
-import withChangeObserver from './withChangeObserver';
+import React, { useContext } from 'react';
+import { FormField, Text, ThemeContext } from 'grommet';
+
 import { StyledPlaceholder } from './StyledFilterFormComponents';
 import TopBarContext from '../context';
 
-export default function({
-  component,
+export default function EnhancedFormField({
+  children,
   placeholder,
   label,
   inputRangeOptions,
+  modified,
+  clearInput,
+  hasValue,
   ...formFieldProps
 }) {
-  const { small, prevQuery } = useContext(TopBarContext);
+  const { small } = useContext(TopBarContext);
 
-  const ChangeAwareComponent = withChangeObserver(
-    component,
-    prevQuery,
-    inputRangeOptions
+  const sizeAdjustedPlaceholder = (
+    <StyledPlaceholder value={small ? label : placeholder} />
   );
 
+  const adjustedChildren = React.cloneElement(children, {
+    placeholder: sizeAdjustedPlaceholder
+  });
+
+  const newValue = modified
+    ? { formField: { border: { color: 'orange', style: 'dashed' } } }
+    : {};
+
   return (
-    <FormField
-      component={ChangeAwareComponent}
-      inputRangeOptions={inputRangeOptions}
-      {...formFieldProps}
-      label={<Text>{small ? '' : label}</Text>}
-      placeholder={<StyledPlaceholder value={small ? label : placeholder} />}
-      small={small}
-    />
+    <ThemeContext.Extend value={newValue}>
+      <FormField
+        inputRangeOptions={inputRangeOptions}
+        label={<Text>{small ? '' : label}</Text>}
+        clearInput={clearInput}
+        hasValue={hasValue}
+        {...formFieldProps}
+      >
+        {adjustedChildren}
+      </FormField>
+    </ThemeContext.Extend>
   );
 }
