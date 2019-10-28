@@ -1,13 +1,12 @@
 import React, { useContext } from 'react';
-import { Keyboard, TextInput } from 'grommet';
+import { Keyboard } from 'grommet';
 import { ConfigContext, DispatchContext, StateContext } from './lib/contexts';
 import { StyledTextInput } from '../StyledFilterFormComponents';
 
-export default React.forwardRef(function YearHotInput(props, ref) {
+export default React.forwardRef(function YearHotInput(formikInputProps, ref) {
   const dispatch = useContext(DispatchContext);
   const { dropValuesRange } = useContext(ConfigContext);
-  const state = useContext(StateContext);
-  const { selectedYears } = state;
+  const { selectedYears } = useContext(StateContext);
 
   function selectTextAndOpenDrop(event) {
     event.target.select();
@@ -27,12 +26,7 @@ export default React.forwardRef(function YearHotInput(props, ref) {
   }
 
   function handleChange(event) {
-    event.persist();
-    if (event.target.value === '' && selectedYears.length > 0) {
-      dispatch({ type: 'reset' });
-    } else {
-      dispatch({ type: 'parseInput', payload: event.target.value });
-    }
+    dispatch({ type: 'parseInput', payload: event.target.value });
   }
 
   function handleWheel(event) {
@@ -54,11 +48,11 @@ export default React.forwardRef(function YearHotInput(props, ref) {
       <StyledTextInput
         ref={ref}
         type="string"
+        {...formikInputProps}
         onChange={handleChange}
         onFocus={selectTextAndOpenDrop}
         onWheel={handleWheel}
         onClick={selectTextAndOpenDrop}
-        {...props}
       />
     </Keyboard>
   );

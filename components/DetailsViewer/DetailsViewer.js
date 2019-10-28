@@ -1,11 +1,12 @@
 import React from 'react';
 import { Box } from 'grommet';
-import { useTimeout } from 'react-use';
 
+import { useTimeout } from 'react-use';
 import MediaContainer from './MediaContainer/MediaContainer';
 import NavigationWrapper from './NavigationWrapper';
 import ApolloDataProvider from '../ApolloDataProvider/ApolloDataProvider';
 import { GET_RELEASE_DETAILS } from '../../apollo/queries';
+import { ActiveSearchDataContext } from './MediaContainer/context';
 
 export default function DetailsViewer({ searchData, detailsID, close }) {
   const initialIndex = searchData.findIndex(entry => entry.id === detailsID);
@@ -22,9 +23,10 @@ export default function DetailsViewer({ searchData, detailsID, close }) {
         }}
         typeName="releaseDetails"
         load={delay}
-        additionalContext={{ activeData }}
       >
-        {children}
+        <ActiveSearchDataContext.Provider value={{ activeData }}>
+          {children}
+        </ActiveSearchDataContext.Provider>
       </ApolloDataProvider>
     );
   };

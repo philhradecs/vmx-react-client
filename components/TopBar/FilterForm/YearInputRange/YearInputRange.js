@@ -1,10 +1,16 @@
 import ContextProvider from './lib/ContextProvider';
 import InputRangeCompound from './InputRangeCompound';
 
-export default function YearInputRange({ onChange, ...props }) {
+export default function YearInputRange({
+  inputRangeOptions,
+  ...formikInputProps
+}) {
   return (
-    <ContextProvider {...props}>
-      <InputRangeCompound onChange={onChange} {...props} />
+    <ContextProvider
+      inputRangeOptions={inputRangeOptions}
+      value={formikInputProps.value}
+    >
+      <InputRangeCompound {...formikInputProps} />
     </ContextProvider>
   );
 }

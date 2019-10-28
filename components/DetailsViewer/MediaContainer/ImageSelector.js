@@ -24,6 +24,9 @@ export default function({
       fill
       {...props}
     >
+      {/* TODO: implement a more robust solution without infinite scroll 
+          investigate alignContent prop on Box
+      */}
       <InfiniteScroll items={images} show={0}>
         {(image, i) => {
           const isActive = i === activeImageIndex;

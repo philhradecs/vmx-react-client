@@ -1,5 +1,4 @@
 import Router from 'next/router';
-import React from 'react';
 import { Query } from 'react-apollo';
 import ApolloDataContext from './context';
 
@@ -23,22 +22,24 @@ function ApolloDataProvider({
   loadingComponent,
   log = false
 }) {
+  let hasMore = { next: false, prev: false };
+  let fetchMoreData = {
+    prevPage: () => {},
+    nextPage: () => {},
+    page: () => {}
+  };
+
   return (
     <Query
       {...apolloOptions}
-      fetchPolicy={load ? 'cache-first' : 'cache-only'}
+      fetchPolicy="cache-first"
       notifyOnNetworkStatusChange
+      skip={!load}
     >
       {({ data, loading, error, variables }) => {
         if (loadingComponent && loading) return loadingComponent;
 
         const fetchedData = data ? data[typeName] : null;
-        let hasMore = { next: false, prev: false };
-        let fetchMoreData = {
-          prevPage: () => {},
-          nextPage: () => {},
-          page: num => {}
-        };
 
         if (fetchedData && Object.keys(fetchedData).includes('pagination')) {
           const { page, pages } = fetchedData.pagination;

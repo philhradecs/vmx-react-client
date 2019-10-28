@@ -6,10 +6,10 @@ import ImageViewer from './ImageViewer';
 import IconWrapper from '../../IconWrapper';
 import DetailsTabsPanel from './DetailsTabsPanel';
 
-import ApolloDataContext from '../../ApolloDataProvider/context';
+import { ActiveSearchDataContext } from './context';
 
 export default function MediaContainer({ close, ...props }) {
-  const { activeData } = useContext(ApolloDataContext);
+  const { activeData } = useContext(ActiveSearchDataContext);
 
   return (
     <Box {...props}>

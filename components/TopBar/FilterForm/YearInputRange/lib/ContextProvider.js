@@ -5,18 +5,15 @@ import { ConfigContext, DispatchContext, StateContext } from './contexts';
 export default function ContextProvider({
   children,
   inputRangeOptions,
-  value,
-  name,
-  placeholder
+  value
 }) {
-  const { dropValuesRange, serializer, parser } = inputRangeOptions;
-  const { init, reducer } = initReducer(dropValuesRange, serializer, parser);
+  const { init, reducer } = initReducer(inputRangeOptions);
   const [state, dispatch] = useReducer(reducer, value, init);
 
+  const { dropValuesRange } = inputRangeOptions;
+
   const config = {
-    dropValuesRange,
-    name,
-    placeholder
+    dropValuesRange
   };
 
   return (
