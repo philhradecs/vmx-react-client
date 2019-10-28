@@ -1,4 +1,6 @@
-import { withRouter } from 'next/router';
+import React from 'react';
+import { setGlobal } from 'reactn';
+import { useRouter } from 'next/router';
 import { Box, Grid } from 'grommet';
 
 import TopBar from '../components/TopBar/TopBar';
@@ -8,12 +10,12 @@ import musicTypes from '../data/discogsMusicTypes190510';
 import { GET_SEARCH_RELEASES } from '../apollo/queries';
 import ApolloDataProvider from '../components/ApolloDataProvider/ApolloDataProvider';
 import PaginationStatusBar from '../components/PaginationStatusBar/PaginationStatusBar';
-import PaginationBar from '../components/PaginationBar/PaginationBar';
+import PaginationControl from '../components/PaginationControl/PaginationControl';
 
 function formatQueryForApollo(queryParam) {
   const query = { ...queryParam };
-  query.page = parseInt(query.page, 10);
-  query.per_page = parseInt(query.per_page, 10);
+  query.page = query.page ? parseInt(query.page, 10) : 1;
+  query.per_page = query.per_page ? parseInt(query.per_page, 10) : 50;
 
   if (Object.prototype.hasOwnProperty.call(query, 'musicType')) {
     const matchedTypeEntry = musicTypes.find(
@@ -26,7 +28,13 @@ function formatQueryForApollo(queryParam) {
   return query;
 }
 
-function Explorer({ router }) {
+export default function Explorer() {
+  const router = useRouter();
+
+  setGlobal({
+    updateFormField: null
+  });
+
   const apolloQuery = formatQueryForApollo(router.query); // translate 'musicType' form parameter to query parameter 'style' or 'genre'
 
   const apolloOptions = {
@@ -54,18 +62,17 @@ function Explorer({ router }) {
           apolloOptions={apolloOptions}
           typeName="searchReleases"
           load
+          log
         >
           {/* <PaginationStatusBar /> */}
           <Box gridArea="coverGrid" overflow="hidden">
             <CoverGrid columns={5} />
           </Box>
           <Box gridArea="paginationBar">
-            <PaginationBar />
+            <PaginationControl />
           </Box>
         </ApolloDataProvider>
       </Grid>
     </Box>
   );
 }
-
-export default withRouter(Explorer);
